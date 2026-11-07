@@ -19,10 +19,10 @@ Installer Supabase CLI, puis à la racine du dépôt :
 supabase login
 supabase link --project-ref TON_PROJECT_REF
 supabase secrets set TURNSTILE_SECRET_KEY=TA_CLE_SECRETE_CLOUDFLARE
-supabase secrets set SUPABASE_SERVICE_ROLE_KEY=TA_CLE_SERVICE_ROLE
 supabase functions deploy submit-exam --no-verify-jwt
 ```
-La clé service_role doit rester dans les secrets Supabase, jamais dans le code ou GitHub. La fonction vérifie Turnstile, valide les données, limite chaque IP à 4 dépôts par tranche de 10 minutes et publie le PDF.
+Supabase fournit déjà à la fonction la variable système `SUPABASE_SERVICE_ROLE_KEY`. Ne tente pas de créer cette variable comme secret personnalisé : les variables commençant par `SUPABASE_` sont réservées. La clé de service reste côté serveur et ne doit jamais être ajoutée au site ou à GitHub.
+La fonction vérifie Turnstile, valide les données, limite chaque IP à 4 dépôts par tranche de 10 minutes et publie le PDF.
 
 ## Sécurité
 - Les visiteurs peuvent lire les épreuves et PDF sans compte.
