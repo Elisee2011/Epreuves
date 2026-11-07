@@ -4,6 +4,10 @@
 const SUPABASE_URL = "";
 const SUPABASE_ANON_KEY = "";
 const BUCKET = "exam-pdfs";
+const TURNSTILE_SITE_KEY = "REMPLACER_PAR_CLE_SITE_CLOUDFLARE";
+let turnstileToken = "";
+let turnstileWidgetId = null;
+let formOpenedAt = 0;
 
 const campuses = ["Lomé","Atakpamé","Kara","Sokodé","Dapaong","Tsévié","Kpalimé"];
 const campusIcons = ["⌂","⌁","◇","▦","✳","⌖","⌂"];
@@ -45,7 +49,7 @@ function saveLocalExams(){localStorage.setItem("epreuves-local-list",JSON.string
 function makeId(){return "local-"+Date.now()+"-"+Math.random().toString(36).slice(2,8)}
 function safeText(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
 function showToast(message){const toast=$("toast");toast.textContent=message;toast.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove("show"),3400)}
-function openModal(){ $("add-modal").classList.add("open");$("add-modal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden"; }
+function openModal(){ formOpenedAt=Date.now();turnstileToken="";if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId);$("add-modal").classList.add("open");$("add-modal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden"; }
 function closeModal(){ $("add-modal").classList.remove("open");$("add-modal").setAttribute("aria-hidden","true");document.body.style.overflow="";$("form-feedback").textContent=""; }
 function fillCampusSelects(){
   for(const id of ["filter-campus","form-campus"]){
@@ -124,28 +128,28 @@ async function submitExam(event){
   event.preventDefault();
   const form=event.currentTarget,button=$("submit-exam"),feedback=$("form-feedback"),file=$("pdf-file").files[0];
   feedback.className="form-feedback";feedback.textContent="";
+  if(form.elements.website.value.trim()){feedback.textContent="Envoi refusé.";return;}
+  if(Date.now()-formOpenedAt<2500){feedback.textContent="Patiente quelques secondes avant l’envoi.";return;}
   if(!file||file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){feedback.textContent="Choisis un fichier PDF valide.";return;}
   if(file.size>15*1024*1024){feedback.textContent="Le fichier dépasse la limite de 15 Mo.";return;}
-  const fields=readForm(form);button.disabled=true;button.textContent="Envoi en cours…";
+  if(!db){feedback.textContent="Supabase n'est pas encore configuré.";return;}
+  if(!turnstileToken){feedback.textContent="Valide le contrôle anti-robot avant l’envoi.";return;}
+  const fields=readForm(form);button.disabled=true;button.textContent="Vérification et envoi…";
   try{
-    if(!db)throw new Error("Supabase n'est pas encore configuré. L'envoi est momentanément indisponible.");
-    const id=crypto.randomUUID();
-    const safeName=file.name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]/g,"-");
-    const filePath="files/"+id+"/"+safeName;
-    const {error:uploadError}=await db.storage.from(BUCKET).upload(filePath,file,{contentType:"application/pdf",upsert:false});
-    if(uploadError)throw uploadError;
-    const {error:insertError}=await db.from("exams").insert({...fields,file_path:filePath,status:"approved"});
-    if(insertError){
-      await db.storage.from(BUCKET).remove([filePath]);
-      throw insertError;
-    }
-    feedback.textContent="Épreuve publiée ! Elle est maintenant visible par tous les visiteurs.";
-    feedback.classList.add("success");showToast("Épreuve publiée pour tous !");
-    form.reset();$("file-name").textContent="Aucun fichier sélectionné";
-    await loadExams();
-    setTimeout(closeModal,1800);
-  }catch(error){console.error(error);feedback.textContent=error.message||"Une erreur est survenue pendant l'envoi.";}
+    const payload=new FormData();payload.append("pdf",file);payload.append("metadata",JSON.stringify(fields));
+    payload.append("turnstileToken",turnstileToken);payload.append("website",form.elements.website.value);
+    const response=await fetch(SUPABASE_URL+"/functions/v1/submit-exam",{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY},body:payload});
+    const result=await response.json();if(!response.ok)throw new Error(result.error||"L’envoi a échoué.");
+    feedback.textContent="Épreuve publiée ! Elle est maintenant visible par tous les visiteurs.";feedback.classList.add("success");showToast("Épreuve publiée pour tous !");
+    turnstileToken="";form.reset();$("file-name").textContent="Aucun fichier sélectionné";
+    if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId);
+    await loadExams();setTimeout(closeModal,1800);
+  }catch(error){console.error(error);feedback.textContent=error.message||"Une erreur est survenue pendant l’envoi.";}
   finally{button.disabled=false;button.innerHTML='Envoyer l’épreuve <span>↗</span>';}
+}
+function setupTurnstile(){
+  if(!window.turnstile||TURNSTILE_SITE_KEY.startsWith("REMPLACER"))return;
+  turnstileWidgetId=window.turnstile.render("#turnstile-container",{sitekey:TURNSTILE_SITE_KEY,callback:token=>{turnstileToken=token;},"expired-callback":()=>{turnstileToken="";},"error-callback":()=>{turnstileToken="";showToast("Le contrôle anti-robot a échoué. Réessaie.");}});
 }
 function resetFilters(){
   selectedCampus="";$("search-input").value="";$("filter-campus").value="";$("filter-class").value="";$("filter-term").value="";$("filter-year").value="";renderCampuses();renderExams();
@@ -153,6 +157,8 @@ function resetFilters(){
 function init(){
   $("year-now").textContent=new Date().getFullYear();
   fillCampusSelects();renderCampuses();
+  const turnstileWait=setInterval(()=>{if(window.turnstile){clearInterval(turnstileWait);setupTurnstile();}},300);
+  setTimeout(()=>clearInterval(turnstileWait),15000);
   ["open-add","mobile-add","hero-add","banner-add","empty-add"].forEach(id=>$(id).addEventListener("click",openModal));
   ["close-add","cancel-add"].forEach(id=>$(id).addEventListener("click",closeModal));
   $("add-modal").addEventListener("click",event=>{if(event.target===$("add-modal"))closeModal()});
