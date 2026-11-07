@@ -99,19 +99,20 @@ async function openExam(item){
   try{
     let url;
     if(item.local_file_id){const blob=await getLocalPdf(item.local_file_id);if(!blob)throw new Error("PDF introuvable sur cet appareil.");url=URL.createObjectURL(blob);}
-    else if(db&&item.file_path){const {data,error}=await db.storage.from(BUCKET).createSignedUrl(item.file_path,300);if(error)throw error;url=data.signedUrl;}
+    else if(db&&item.file_path){const {data,error}=await db.storage.from(BUCKET).getPublicUrl(item.file_path).data.publicUrl;if(error)throw error;url=data.signedUrl;}
     else if(item.file_url){url=item.file_url;}
     else throw new Error("Le fichier PDF n'est pas disponible.");
     window.open(url,"_blank","noopener");
   }catch(error){showToast(error.message||"Impossible d'ouvrir ce PDF.");}
 }
 async function loadExams(){
-  if(db){
-    const {data,error}=await db.from("exams").select("*").eq("status","approved").order("created_at",{ascending:false});
-    if(error){console.error(error);showToast("Impossible de charger les épreuves depuis la base de données.");exams=[];}
-    else exams=data||[];
+  if(!db){
+    exams=[];
+    showToast("Supabase n'est pas encore configuré. Les épreuves ne peuvent pas être chargées.");
   }else{
-    exams=getLocalExams();
+    const {data,error}=await db.from("exams").select("*").eq("status","approved").order("created_at",{ascending:false});
+    if(error){console.error(error);showToast("Impossible de charger les épreuves depuis Supabase.");exams=[];}
+    else exams=data||[];
   }
   updateYearFilter();renderExams();
 }
@@ -127,23 +128,21 @@ async function submitExam(event){
   if(file.size>15*1024*1024){feedback.textContent="Le fichier dépasse la limite de 15 Mo.";return;}
   const fields=readForm(form);button.disabled=true;button.textContent="Envoi en cours…";
   try{
-    if(db){
-      const id=makeId().replace(/[^a-zA-Z0-9-]/g,"");
-      const safeName=file.name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]/g,"-");
-      const filePath="pending/"+id+"/"+safeName;
-      const {error:uploadError}=await db.storage.from(BUCKET).upload(filePath,file,{contentType:"application/pdf",upsert:false});
-      if(uploadError)throw uploadError;
-      const {error:insertError}=await db.from("exams").insert({...fields,file_path:filePath,status:"pending"});
-      if(insertError)throw insertError;
-      feedback.textContent="Épreuve envoyée ! Elle sera visible après validation par un administrateur.";
-      feedback.classList.add("success");showToast("Épreuve envoyée pour validation.");
-    }else{
-      const id=makeId();await storeLocalPdf(id,file);
-      exams.push({...fields,id,local_file_id:id,status:"local",created_at:new Date().toISOString()});saveLocalExams();updateYearFilter();renderExams();
-      feedback.textContent="Épreuve enregistrée sur cet appareil. Pour la partager avec tous les élèves, connecte Supabase (voir README).";
-      feedback.classList.add("success");showToast("Épreuve enregistrée sur cet appareil.");
+    if(!db)throw new Error("Supabase n'est pas encore configuré. L'envoi est momentanément indisponible.");
+    const id=crypto.randomUUID();
+    const safeName=file.name.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]/g,"-");
+    const filePath="files/"+id+"/"+safeName;
+    const {error:uploadError}=await db.storage.from(BUCKET).upload(filePath,file,{contentType:"application/pdf",upsert:false});
+    if(uploadError)throw uploadError;
+    const {error:insertError}=await db.from("exams").insert({...fields,file_path:filePath,status:"approved"});
+    if(insertError){
+      await db.storage.from(BUCKET).remove([filePath]);
+      throw insertError;
     }
+    feedback.textContent="Épreuve publiée ! Elle est maintenant visible par tous les visiteurs.";
+    feedback.classList.add("success");showToast("Épreuve publiée pour tous !");
     form.reset();$("file-name").textContent="Aucun fichier sélectionné";
+    await loadExams();
     setTimeout(closeModal,1800);
   }catch(error){console.error(error);feedback.textContent=error.message||"Une erreur est survenue pendant l'envoi.";}
   finally{button.disabled=false;button.innerHTML='Envoyer l’épreuve <span>↗</span>';}
