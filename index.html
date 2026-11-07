@@ -13,6 +13,7 @@
   <link rel="apple-touch-icon" href="/assets/logo-epreuves-final.png?v=1">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <script defer src="app.js"></script>
 </head>
 <body>
@@ -108,6 +109,8 @@
           <label class="form-field full"><span>Précision (facultatif)</span><input name="notes" maxlength="180" placeholder="Ex. : épreuve de rattrapage, durée 2 h…"></label>
           <label class="upload-zone full" for="pdf-file"><span class="upload-icon">↑</span><strong>Choisir le fichier PDF</strong><small>Un seul fichier · 15 Mo maximum</small><span class="file-name" id="file-name">Aucun fichier sélectionné</span><input id="pdf-file" name="pdf" type="file" accept="application/pdf,.pdf" required></label>
         </div>
+        <label class="spam-trap" aria-hidden="true">Ne pas remplir<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+        <div id="turnstile-container" class="turnstile-container"></div>
         <div class="form-notice"><span>ⓘ</span><p>Après l’envoi, l’épreuve est publiée dans la bibliothèque et accessible à tous les visiteurs.</p></div>
         <div class="form-actions"><button type="button" class="button button-outline" id="cancel-add">Annuler</button><button type="submit" class="button button-primary" id="submit-exam">Envoyer l’épreuve <span>↗</span></button></div>
         <p class="form-feedback" id="form-feedback" role="status"></p>
