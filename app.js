@@ -1,8 +1,8 @@
 /* Épreuves — configuration Supabase
    Pour activer le partage entre tous les visiteurs, renseigne l'URL et la clé anon
    de ton projet Supabase ci-dessous. Ne mets JAMAIS une clé service_role ici. */
-const SUPABASE_URL = "";
-const SUPABASE_ANON_KEY = "";
+const SUPABASE_URL = "https://cigtsvzyeaxluneexnsa.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_AUky4UeugSkRErIjG_yMRw_vetPlrwY";
 const BUCKET = "exam-pdfs";
 const TURNSTILE_SITE_KEY = "REMPLACER_PAR_CLE_SITE_CLOUDFLARE";
 let turnstileToken = "";
