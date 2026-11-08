@@ -4,7 +4,7 @@
 const SUPABASE_URL = "https://cigtsvzyeaxluneexnsa.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_AUky4UeugSkRErIjG_yMRw_vetPlrwY";
 const BUCKET = "exam-pdfs";
-const TURNSTILE_SITE_KEY = "REMPLACER_PAR_CLE_SITE_CLOUDFLARE";
+const TURNSTILE_SITE_KEY = "0x4AAAAAAF4asAUByI_YNa1e";
 let turnstileToken = "";
 let turnstileWidgetId = null;
 let formOpenedAt = 0;
@@ -103,7 +103,7 @@ async function openExam(item){
   try{
     let url;
     if(item.local_file_id){const blob=await getLocalPdf(item.local_file_id);if(!blob)throw new Error("PDF introuvable sur cet appareil.");url=URL.createObjectURL(blob);}
-    else if(db&&item.file_path){const {data,error}=await db.storage.from(BUCKET).getPublicUrl(item.file_path).data.publicUrl;if(error)throw error;url=data.signedUrl;}
+    else if(db&&item.file_path){const {data,error}=db.storage.from(BUCKET).getPublicUrl(item.file_path);if(error)throw error;url=data.publicUrl;}
     else if(item.file_url){url=item.file_url;}
     else throw new Error("Le fichier PDF n'est pas disponible.");
     window.open(url,"_blank","noopener");
