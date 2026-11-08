@@ -68,9 +68,9 @@ function renderCampuses(){
 }
 function termLabel(term){return ({"1":"1er trimestre","2":"2e trimestre","3":"3e trimestre"})[String(term)]||"Trimestre non précisé"}
 function numberLabel(number,type){
+  if(String(number)==="composition")return "Composition";
   if(String(number)==="other")return "Autre évaluation";
-  if(String(number)==="5")return "5e composition";
-  return ({"1":"1er devoir","2":"2e devoir","3":"3e devoir"})[String(number)]||(type||"Évaluation");
+  return ({"1":"1er devoir","2":"2e devoir"})[String(number)]||(String(number)||type||"Évaluation");
 }
 function updateYearFilter(){
   const select=$("filter-year"),current=select.value;
@@ -122,7 +122,7 @@ async function loadExams(){
 }
 function readForm(form){
   const data=new FormData(form);
-  return {campus:data.get("campus"),level:"Secondaire",class_name:data.get("className"),series:data.get("series").trim(),subject:data.get("subject").trim(),exam_type:data.get("examType"),term:data.get("term"),number:data.get("number"),school_year:data.get("schoolYear").trim(),notes:data.get("notes").trim()};
+  return {campus:data.get("campus"),level:"Secondaire",class_name:data.get("className"),series:data.get("series").trim(),subject:data.get("subject").trim(),exam_type:data.get("examType"),term:data.get("term"),number:data.get("number")==="other"?data.get("numberOther").trim():data.get("number"),school_year:data.get("schoolYear").trim(),notes:data.get("notes").trim()};
 }
 async function submitExam(event){
   event.preventDefault();
@@ -164,6 +164,14 @@ function init(){
   $("add-modal").addEventListener("click",event=>{if(event.target===$("add-modal"))closeModal()});
   document.addEventListener("keydown",event=>{if(event.key==="Escape")closeModal()});
   $("exam-form").addEventListener("submit",submitExam);
+  $("form-number").addEventListener("change",()=>{
+    const isOther=$("form-number").value==="other";
+    $("number-other-field").hidden=!isOther;
+    $("number-other").required=isOther;
+    if(!isOther)$("number-other").value="";
+    if($("form-number").value==="composition")$("form-exam-type").value="Composition";
+    else if(["1","2"].includes($("form-number").value))$("form-exam-type").value="Devoir";
+  });
   $("pdf-file").addEventListener("change",event=>{$("file-name").textContent=event.target.files[0]?.name||"Aucun fichier sélectionné"});
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
   $("reset-filters").addEventListener("click",resetFilters);
