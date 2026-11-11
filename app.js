@@ -162,7 +162,8 @@ function setupPageLoader(){
   window.addEventListener("load",hide,{once:true});
   setTimeout(hide,8000);
 }
-\nfunction init(){
+function init(){
+  setupPageLoader();
   $("year-now").textContent=new Date().getFullYear();
   fillCampusSelects();renderCampuses();
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
