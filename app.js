@@ -152,15 +152,26 @@ function setupPageLoader(){
   const loader=$("site-loader");
   if(!loader)return;
   const startedAt=performance.now();
-  let finished=false;
-  const hide=()=>{
-    if(finished)return;
-    finished=true;
-    const wait=Math.max(0,900-(performance.now()-startedAt));
-    setTimeout(()=>{loader.classList.add("is-hidden");setTimeout(()=>loader.remove(),500)},wait);
+  let pageLoaded=document.readyState==="complete";
+  let appReady=false;
+  let hidingScheduled=false;
+  const tryHide=()=>{
+    if(!pageLoaded||!appReady||hidingScheduled)return;
+    hidingScheduled=true;
+    const remaining=Math.max(0,1500-(performance.now()-startedAt));
+    setTimeout(()=>{
+      loader.classList.add("is-hidden");
+      setTimeout(()=>loader.remove(),500);
+    },remaining);
   };
-  window.addEventListener("load",hide,{once:true});
-  setTimeout(hide,8000);
+  window.addEventListener("load",()=>{
+    pageLoaded=true;
+    tryHide();
+  },{once:true});
+  window.markAppReady=()=>{
+    appReady=true;
+    tryHide();
+  };
 }
 function init(){
   setupPageLoader();
@@ -169,6 +180,6 @@ function init(){
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
   $("reset-filters").addEventListener("click",resetFilters);
   setupRevealAnimations();
-  loadExams();
+  loadExams().finally(()=>window.markAppReady?.());
 }
 document.addEventListener("DOMContentLoaded",init);
