@@ -31,9 +31,9 @@ Deno.serve(async (req) => {
   const path="files/"+id+"/"+safeName;
   const {error:uploadError}=await admin.storage.from("exam-pdfs").upload(path,file,{contentType:"application/pdf",upsert:false});
   if(uploadError) throw uploadError;
-  const row={campus:m.campus,level:"Secondaire",class_name:m.class_name,series:m.series||null,subject:String(m.subject).trim(),exam_type:m.exam_type,term:Number(m.term),number:String(m.number||"other"),school_year:m.school_year,notes:m.notes||null,file_path:path,status:"approved"};
+  const row={campus:m.campus,level:"Secondaire",class_name:m.class_name,series:m.series||null,subject:String(m.subject).trim(),exam_type:m.exam_type,term:Number(m.term),number:String(m.number||"other"),school_year:m.school_year,notes:m.notes||null,file_path:path,status:"pending"};
   const {data,error:insertError}=await admin.from("exams").insert(row).select().single();
   if(insertError){await admin.storage.from("exam-pdfs").remove([path]);throw insertError;}
-  return json({success:true,id:data.id});
+  return json({success:true,id:data.id,message:"Épreuve envoyée. Elle sera visible après validation par un administrateur."});
  }catch(error){console.error(error);return json({error:"Erreur serveur pendant le dépôt. Réessaie plus tard."},500);}
 });
