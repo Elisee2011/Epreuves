@@ -147,3 +147,15 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
     max-height:80vh;
   }
 }
+
+
+/* Contenu éditorial indexable et utile aux élèves */
+.seo-context{padding:58px max(9vw,28px);background:#fff;border-top:1px solid var(--line)}
+.seo-context-inner{max-width:900px;margin:0 auto}
+.seo-context h2{font:800 clamp(23px,3vw,30px) Manrope;letter-spacing:-.7px;line-height:1.25;margin:0 0 17px;color:var(--ink)}
+.seo-context h3{font:800 16px Manrope;margin:25px 0 8px;color:#294532}
+.seo-context p{font-size:13px;line-height:1.85;color:#647568;margin:0 0 12px}
+.seo-context strong{color:#294532}
+.seo-context-link{display:inline-flex;margin-top:10px;color:var(--navy);font-size:12px;font-weight:800}
+.seo-context-link:hover{text-decoration:underline}
+@media(max-width:680px){.seo-context{padding:43px 22px}.seo-context p{font-size:12px}}
