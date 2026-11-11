@@ -97,7 +97,7 @@
     if(email!==OWNER){setFeedback("admin-auth-feedback","La création du compte super-admin est réservée à l'adresse principale.");return}
     if(password.length<8){setFeedback("admin-auth-feedback","Choisis un mot de passe d'au moins 8 caractères.");return}
     setFeedback("admin-auth-feedback","Création du compte…");
-    const {data,error}=await client.auth.signUp({email,password});
+    const {data,error}=await client.auth.signUp({email,password,options:{emailRedirectTo:"https://epreuves-iota.vercel.app/#admin"}});
     if(error){setFeedback("admin-auth-feedback",error.message);return}
     if(data.session){setFeedback("admin-auth-feedback","Compte créé.");await loadDashboard()}
     else setFeedback("admin-auth-feedback","Compte créé. Confirme ton adresse depuis l'e-mail reçu, puis connecte-toi.",true);
