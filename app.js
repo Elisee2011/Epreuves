@@ -159,10 +159,12 @@ function setupPageLoader(){
   const hide=()=>{
     if(removed)return;
     removed=true;
-    // Faire apparaître le site en fondu pendant que le logo s'efface.
-    document.body.classList.add("site-ready");
-    loader.classList.add("is-hidden");
-    setTimeout(()=>loader.remove(),500);
+    // Laisser le navigateur peindre l'état initial avant de lancer le fondu.
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      document.body.classList.add("site-ready");
+      loader.classList.add("is-hidden");
+      setTimeout(()=>loader.remove(),550);
+    }));
   };
   const tryHide=()=>{
     if(!pageLoaded||!appReady||hidingScheduled)return;
