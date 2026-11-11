@@ -11,6 +11,7 @@ create table if not exists public.admins (
   created_at timestamptz not null default now()
 );
 alter table public.admins enable row level security;
+revoke all on table public.admins from anon, authenticated;
 grant select, insert, update, delete on public.admins to authenticated;
 grant all on public.admins to service_role;
 
@@ -57,8 +58,9 @@ drop policy if exists "exams_admin_insert" on public.exams;
 drop policy if exists "exams_admin_update" on public.exams;
 drop policy if exists "exams_admin_delete" on public.exams;
 
-grant select on public.exams to anon, authenticated;
-grant insert, update, delete on public.exams to authenticated;
+revoke all on table public.exams from anon, authenticated;
+grant select on public.exams to anon;
+grant select, insert, update, delete on public.exams to authenticated;
 grant all on public.exams to service_role;
 
 create policy "exams_public_read_approved" on public.exams
