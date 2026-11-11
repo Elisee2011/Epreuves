@@ -155,15 +155,23 @@ function setupPageLoader(){
   let pageLoaded=document.readyState==="complete";
   let appReady=false;
   let hidingScheduled=false;
+  let removed=false;
+  const hide=()=>{
+    if(removed)return;
+    removed=true;
+    loader.classList.add("is-hidden");
+    setTimeout(()=>loader.remove(),500);
+  };
   const tryHide=()=>{
     if(!pageLoaded||!appReady||hidingScheduled)return;
     hidingScheduled=true;
+    clearTimeout(failsafe);
     const remaining=Math.max(0,1500-(performance.now()-startedAt));
-    setTimeout(()=>{
-      loader.classList.add("is-hidden");
-      setTimeout(()=>loader.remove(),500);
-    },remaining);
+    setTimeout(hide,remaining);
   };
+  // Sécurité : un chargement réseau ou une erreur JS ne doit jamais
+  // laisser le voile de chargement affiché indéfiniment.
+  const failsafe=setTimeout(hide,12000);
   window.addEventListener("load",()=>{
     pageLoaded=true;
     tryHide();
