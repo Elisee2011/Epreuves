@@ -15,6 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <script defer src="app.js"></script>
+  <script defer src="admin.js"></script>
 </head>
 <body>
   <header class="topbar">
@@ -90,7 +91,29 @@
     </section>
   </main>
 
-  <footer><a class="brand footer-brand" href="#"><span class="brand-mark"><img src="/assets/logo-epreuves-final.png?v=1" alt=""></span><span class="brand-copy"><strong>ÉPREUVES</strong><small>LYCÉES SCIENTIFIQUES DU TOGO</small></span></a><span>Une initiative de partage des ressources scolaires.</span><span>© <span id="year-now"></span> · Épreuves</span></footer>
+  <section class="admin-screen" id="admin-screen" hidden>
+    <div class="admin-shell">
+      <a class="admin-back" href="/">← Retour à la bibliothèque</a>
+      <div class="admin-auth" id="admin-auth">
+        <div class="section-kicker">ESPACE SÉCURISÉ</div><h1>Administration</h1>
+        <p>Connecte-toi avec ton compte administrateur pour gérer les épreuves.</p>
+        <form id="admin-auth-form" class="admin-auth-form">
+          <label class="form-field"><span>Adresse e-mail</span><input id="admin-email" type="email" autocomplete="email" required placeholder="nom@exemple.com"></label>
+          <label class="form-field"><span>Mot de passe</span><input id="admin-password" type="password" autocomplete="current-password" minlength="8" required placeholder="8 caractères minimum"></label>
+          <button class="button button-primary" id="admin-login" type="submit">Se connecter</button>
+          <button class="button button-outline" id="admin-signup" type="button">Créer mon compte super-admin</button>
+          <p class="admin-feedback" id="admin-auth-feedback" role="status"></p>
+        </form>
+      </div>
+      <div class="admin-dashboard" id="admin-dashboard" hidden>
+        <div class="admin-heading"><div><div class="section-kicker">TABLEAU DE BORD</div><h1>Gestion des épreuves</h1><p id="admin-identity"></p></div><button class="button button-outline" id="admin-logout">Déconnexion</button></div>
+        <div class="admin-stats"><div><strong id="pending-count">0</strong><span>En attente</span></div><div><strong id="published-count">0</strong><span>Publiées</span></div></div>
+        <div class="admin-section"><h2>Épreuves à valider</h2><div id="pending-list" class="admin-list"></div><p class="admin-feedback" id="pending-feedback"></p></div>
+        <div class="admin-section" id="admins-section" hidden><h2>Administrateurs</h2><form id="add-admin-form" class="add-admin-form"><input id="new-admin-email" type="email" placeholder="Adresse e-mail du nouvel administrateur" required><button class="button button-primary" type="submit">Ajouter</button></form><div id="admins-list" class="admin-list"></div><p class="admin-feedback" id="admins-feedback"></p></div>
+      </div>
+    </div>
+  </section>
+  <footer><a class="brand footer-brand" href="#"><span class="brand-mark"><img src="/assets/logo-epreuves-final.png?v=1" alt=""></span><span class="brand-copy"><strong>ÉPREUVES</strong><small>LYCÉES SCIENTIFIQUES DU TOGO</small></span></a><span>Une initiative de partage des ressources scolaires.</span><span>© <span id="year-now"></span> · Épreuves</span><a class="admin-footer-link" href="#admin">Administration</a></footer>
 
   <div class="modal-backdrop" id="add-modal" aria-hidden="true">
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -112,7 +135,7 @@
         </div>
         <label class="spam-trap" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">Ne pas remplir<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
         <div id="turnstile-container" class="turnstile-container"></div>
-        <div class="form-notice"><span>ⓘ</span><p>Après l’envoi, l’épreuve est publiée dans la bibliothèque et accessible à tous les visiteurs.</p></div>
+        <div class="form-notice"><span>ⓘ</span><p>Après l’envoi, l’épreuve est vérifiée par un administrateur avant sa publication.</p></div>
         <div class="form-actions"><button type="button" class="button button-outline" id="cancel-add">Annuler</button><button type="submit" class="button button-primary" id="submit-exam">Envoyer l’épreuve <span>↗</span></button></div>
         <p class="form-feedback" id="form-feedback" role="status"></p>
       </form>
