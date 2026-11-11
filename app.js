@@ -147,7 +147,22 @@ async function loadExams(){
   }
   updateYearFilter();updateStats();renderExams();setupRevealAnimations();
 }
-function init(){
+
+function setupPageLoader(){
+  const loader=$("site-loader");
+  if(!loader)return;
+  const startedAt=performance.now();
+  let finished=false;
+  const hide=()=>{
+    if(finished)return;
+    finished=true;
+    const wait=Math.max(0,900-(performance.now()-startedAt));
+    setTimeout(()=>{loader.classList.add("is-hidden");setTimeout(()=>loader.remove(),500)},wait);
+  };
+  window.addEventListener("load",hide,{once:true});
+  setTimeout(hide,8000);
+}
+\nfunction init(){
   $("year-now").textContent=new Date().getFullYear();
   fillCampusSelects();renderCampuses();
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
