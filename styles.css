@@ -161,15 +161,27 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 @media(max-width:680px){.seo-context{padding:43px 22px}.seo-context p{font-size:12px}}
 
 
-/* Transition fluide entre le logo de chargement et le contenu du site */
-body > :not(#site-loader){
+/* Fondu du contenu principal : ne touche pas aux panneaux masqués ni aux éléments système */
+body > header,
+body > main,
+body > footer,
+body > .toast,
+body > #admin-screen:not([hidden]){
   opacity:0;
-  transition:opacity .5s cubic-bezier(.22,.61,.36,1);
-  transition-delay:0s;
+  transition:opacity .5s ease;
 }
-body.site-ready > :not(#site-loader){
+body.site-ready > header,
+body.site-ready > main,
+body.site-ready > footer,
+body.site-ready > .toast,
+body.site-ready > #admin-screen:not([hidden]){
   opacity:1;
 }
+/* Garantit qu'un panneau portant hidden reste réellement invisible. */
+[hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){
-  body > :not(#site-loader){opacity:1;transition:none}
+  body > header,body > main,body > footer,body > .toast,body > #admin-screen:not([hidden]){
+    opacity:1;
+    transition:none;
+  }
 }
