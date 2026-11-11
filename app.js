@@ -140,7 +140,7 @@ async function submitExam(event){
     payload.append("turnstileToken",turnstileToken);payload.append("website",form.elements.website.value);
     const response=await fetch(SUPABASE_URL+"/functions/v1/submit-exam",{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY},body:payload});
     const result=await response.json();if(!response.ok)throw new Error(result.error||"L’envoi a échoué.");
-    feedback.textContent="Épreuve publiée ! Elle est maintenant visible par tous les visiteurs.";feedback.classList.add("success");showToast("Épreuve publiée pour tous !");
+    feedback.textContent=result.message||"Épreuve envoyée. Elle sera publiée après validation.";feedback.classList.add("success");showToast("Épreuve envoyée pour validation.");
     turnstileToken="";form.reset();$("file-name").textContent="Aucun fichier sélectionné";
     if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId);
     await loadExams();setTimeout(closeModal,1800);
