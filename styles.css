@@ -71,3 +71,6 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 
 /* Masquer l'illustration uniquement sur mobile */
 @media(max-width:680px){.hero-art{display:none!important}.hero{padding-bottom:42px}}
+
+/* Conserver les dimensions de la zone verte sur mobile sans l'illustration */
+@media(max-width:680px){.hero{min-height:540px;justify-content:center;padding-top:48px;padding-bottom:48px}.hero-content{max-width:600px}}
