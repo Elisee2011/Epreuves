@@ -5,9 +5,6 @@ const SUPABASE_URL = "https://cigtsvzyeaxluneexnsa.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_AUky4UeugSkRErIjG_yMRw_vetPlrwY";
 const BUCKET = "exam-pdfs";
 const TURNSTILE_SITE_KEY = "0x4AAAAAAF4asAUByI_YNa1e";
-let turnstileToken = "";
-let turnstileWidgetId = null;
-let formOpenedAt = 0;
 
 const campuses = ["Lomé","Atakpamé","Kara","Sokodé","Dapaong","Tsévié","Kpalimé"];
 const campusIcons = ["⌂","⌁","◇","▦","✳","⌖","⌂"];
@@ -49,8 +46,6 @@ function saveLocalExams(){localStorage.setItem("epreuves-local-list",JSON.string
 function makeId(){return "local-"+Date.now()+"-"+Math.random().toString(36).slice(2,8)}
 function safeText(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
 function showToast(message){const toast=$("toast");toast.textContent=message;toast.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove("show"),3400)}
-function openModal(){ formOpenedAt=Date.now();turnstileToken="";if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId);$("add-modal").classList.add("open");$("add-modal").setAttribute("aria-hidden","false");document.body.style.overflow="hidden"; }
-function closeModal(){ $("add-modal").classList.remove("open");$("add-modal").setAttribute("aria-hidden","true");document.body.style.overflow="";$("form-feedback").textContent=""; }
 function fillCampusSelects(){
   for(const id of ["filter-campus","form-campus"]){
     const select=$(id);
@@ -120,59 +115,9 @@ async function loadExams(){
   }
   updateYearFilter();renderExams();
 }
-function readForm(form){
-  const data=new FormData(form);
-  return {campus:data.get("campus"),level:"Secondaire",class_name:data.get("className"),series:data.get("series").trim(),subject:data.get("subject").trim(),exam_type:data.get("examType"),term:data.get("term"),number:data.get("number")==="other"?data.get("numberOther").trim():data.get("number"),school_year:data.get("schoolYear").trim(),notes:data.get("notes").trim()};
-}
-async function submitExam(event){
-  event.preventDefault();
-  const form=event.currentTarget,button=$("submit-exam"),feedback=$("form-feedback"),file=$("pdf-file").files[0];
-  feedback.className="form-feedback";feedback.textContent="";
-  if(form.elements.website.value.trim()){feedback.textContent="Envoi refusé.";return;}
-  if(Date.now()-formOpenedAt<2500){feedback.textContent="Patiente quelques secondes avant l’envoi.";return;}
-  if(!file||file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){feedback.textContent="Choisis un fichier PDF valide.";return;}
-  if(file.size>15*1024*1024){feedback.textContent="Le fichier dépasse la limite de 15 Mo.";return;}
-  if(!db){feedback.textContent="Supabase n'est pas encore configuré.";return;}
-  if(!turnstileToken){feedback.textContent="Valide le contrôle anti-robot avant l’envoi.";return;}
-  const fields=readForm(form);button.disabled=true;button.textContent="Vérification et envoi…";
-  try{
-    const payload=new FormData();payload.append("pdf",file);payload.append("metadata",JSON.stringify(fields));
-    payload.append("turnstileToken",turnstileToken);payload.append("website",form.elements.website.value);
-    const response=await fetch(SUPABASE_URL+"/functions/v1/submit-exam",{method:"POST",headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY},body:payload});
-    const result=await response.json();if(!response.ok)throw new Error(result.error||"L’envoi a échoué.");
-    feedback.textContent=result.message||"Épreuve envoyée. Elle sera publiée après validation.";feedback.classList.add("success");showToast("Épreuve envoyée pour validation.");
-    turnstileToken="";form.reset();$("file-name").textContent="Aucun fichier sélectionné";
-    if(window.turnstile&&turnstileWidgetId!==null)window.turnstile.reset(turnstileWidgetId);
-    await loadExams();setTimeout(closeModal,1800);
-  }catch(error){console.error(error);feedback.textContent=error.message||"Une erreur est survenue pendant l’envoi.";}
-  finally{button.disabled=false;button.innerHTML='Envoyer l’épreuve <span>↗</span>';}
-}
-function setupTurnstile(){
-  if(!window.turnstile||TURNSTILE_SITE_KEY.startsWith("REMPLACER"))return;
-  turnstileWidgetId=window.turnstile.render("#turnstile-container",{sitekey:TURNSTILE_SITE_KEY,callback:token=>{turnstileToken=token;},"expired-callback":()=>{turnstileToken="";},"error-callback":()=>{turnstileToken="";showToast("Le contrôle anti-robot a échoué. Réessaie.");}});
-}
-function resetFilters(){
-  selectedCampus="";$("search-input").value="";$("filter-campus").value="";$("filter-class").value="";$("filter-term").value="";$("filter-year").value="";renderCampuses();renderExams();
-}
 function init(){
   $("year-now").textContent=new Date().getFullYear();
   fillCampusSelects();renderCampuses();
-  const turnstileWait=setInterval(()=>{if(window.turnstile){clearInterval(turnstileWait);setupTurnstile();}},300);
-  setTimeout(()=>clearInterval(turnstileWait),15000);
-  ["open-add","mobile-add","hero-add","banner-add","empty-add"].forEach(id=>$(id).addEventListener("click",openModal));
-  ["close-add","cancel-add"].forEach(id=>$(id).addEventListener("click",closeModal));
-  $("add-modal").addEventListener("click",event=>{if(event.target===$("add-modal"))closeModal()});
-  document.addEventListener("keydown",event=>{if(event.key==="Escape")closeModal()});
-  $("exam-form").addEventListener("submit",submitExam);
-  $("form-number").addEventListener("change",()=>{
-    const isOther=$("form-number").value==="other";
-    $("number-other-field").hidden=!isOther;
-    $("number-other").required=isOther;
-    if(!isOther)$("number-other").value="";
-    if($("form-number").value==="composition")$("form-exam-type").value="Composition";
-    else if(["1","2"].includes($("form-number").value))$("form-exam-type").value="Devoir";
-  });
-  $("pdf-file").addEventListener("change",event=>{$("file-name").textContent=event.target.files[0]?.name||"Aucun fichier sélectionné"});
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
   $("reset-filters").addEventListener("click",resetFilters);
   loadExams();
