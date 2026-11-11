@@ -47,10 +47,41 @@ function makeId(){return "local-"+Date.now()+"-"+Math.random().toString(36).slic
 function safeText(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
 function showToast(message){const toast=$("toast");toast.textContent=message;toast.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove("show"),3400)}
 function fillCampusSelects(){
-  for(const id of ["filter-campus","form-campus"]){
-    const select=$(id);
-    campuses.forEach(name=>{const option=document.createElement("option");option.value=name;option.textContent=name;select.append(option)});
+  const select=$("filter-campus");
+  if(!select)return;
+  campuses.forEach(name=>{
+    const option=document.createElement("option");
+    option.value=name;
+    option.textContent="Lycée Scientifique de "+name;
+    select.append(option);
+  });
+}
+function updateStats(){
+  const subjects=new Set(exams.map(item=>item.subject).filter(Boolean));
+  $("stat-campus").textContent=String(campuses.length).padStart(2,"0");
+  $("stat-exams").textContent=exams.length.toLocaleString("fr-FR");
+  $("stat-subjects").textContent=subjects.size.toLocaleString("fr-FR");
+}
+function setupRevealAnimations(){
+  const targets=document.querySelectorAll(".section,.stats-row,.hero-content,.hero-art,.exam-card,.campus-card");
+  targets.forEach((element,index)=>{
+    if(element.classList.contains("reveal-ready"))return;
+    element.classList.add("reveal-ready");
+    element.style.setProperty("--reveal-delay",(index%4)*75+"ms");
+  });
+  if(!("IntersectionObserver" in window)){
+    targets.forEach(element=>element.classList.add("is-visible"));
+    return;
   }
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  },{threshold:.12});
+  targets.forEach(element=>observer.observe(element));
 }
 function renderCampuses(){
   const grid=$("campus-grid");grid.innerHTML="";
@@ -93,6 +124,7 @@ function renderExams(){
     list.append(card);
   });
   $("empty-state").classList.toggle("show",filtered.length===0);
+  setupRevealAnimations();
 }
 async function openExam(item){
   try{
@@ -113,13 +145,14 @@ async function loadExams(){
     if(error){console.error(error);showToast("Impossible de charger les épreuves depuis Supabase.");exams=[];}
     else exams=data||[];
   }
-  updateYearFilter();renderExams();
+  updateYearFilter();updateStats();renderExams();setupRevealAnimations();
 }
 function init(){
   $("year-now").textContent=new Date().getFullYear();
   fillCampusSelects();renderCampuses();
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
   $("reset-filters").addEventListener("click",resetFilters);
+  setupRevealAnimations();
   loadExams();
 }
 document.addEventListener("DOMContentLoaded",init);
