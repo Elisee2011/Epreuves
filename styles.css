@@ -159,3 +159,17 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 .seo-context-link{display:inline-flex;margin-top:10px;color:var(--navy);font-size:12px;font-weight:800}
 .seo-context-link:hover{text-decoration:underline}
 @media(max-width:680px){.seo-context{padding:43px 22px}.seo-context p{font-size:12px}}
+
+
+/* Transition fluide entre le logo de chargement et le contenu du site */
+body > :not(#site-loader){
+  opacity:0;
+  transition:opacity .65s cubic-bezier(.22,.61,.36,1);
+  transition-delay:.08s;
+}
+body.site-ready > :not(#site-loader){
+  opacity:1;
+}
+@media(prefers-reduced-motion:reduce){
+  body > :not(#site-loader){opacity:1;transition:none}
+}
