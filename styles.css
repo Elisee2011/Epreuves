@@ -68,3 +68,6 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 .section-heading:hover h2{letter-spacing:.2px}
 .campus-card:focus-visible,.exam-card:focus-visible{outline:3px solid #159447;outline-offset:3px}
 @media(max-width:680px){.hero-art{translate:none!important}.paper-front{animation:paper-float 3.8s ease-in-out infinite}}
+
+/* Masquer l'illustration uniquement sur mobile */
+@media(max-width:680px){.hero-art{display:none!important}.hero{padding-bottom:42px}}
