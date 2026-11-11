@@ -27,8 +27,6 @@
       <a href="#etablissements">Établissements</a>
       <a href="#explorer">Explorer</a>
     </nav>
-    <button class="button button-primary add-top" id="open-add"><span class="plus">＋</span> Ajouter une épreuve</button>
-    <button class="icon-button mobile-menu" id="mobile-add" aria-label="Ajouter une épreuve">＋</button>
   </header>
 
   <main>
@@ -40,7 +38,6 @@
         <p>Retrouve, consulte et partage les sujets des Lycées Scientifiques du Togo. Une bibliothèque construite par et pour les élèves.</p>
         <div class="hero-actions">
           <a class="button button-light" href="#etablissements">Explorer les épreuves <span>↗</span></a>
-          <button class="button button-glass" id="hero-add">＋ Déposer un sujet</button>
         </div>
         <div class="hero-note"><span class="avatars">L</span><span>7 établissements · Une bibliothèque commune</span></div>
       </div>
@@ -83,12 +80,9 @@
       </div>
       <div class="results-bar"><span id="results-count">Aucune épreuve publiée pour le moment</span><span class="results-sort">Les plus récentes d’abord</span></div>
       <div class="exam-list" id="exam-list"></div>
-      <div class="empty-state" id="empty-state"><div class="empty-icon">▤</div><h3>La bibliothèque prend vie</h3><p>Aucune épreuve ne correspond à ta recherche. Tu peux être le premier à partager un sujet.</p><button class="button button-primary" id="empty-add">＋ Ajouter une épreuve</button></div>
+      <div class="empty-state" id="empty-state"><div class="empty-icon">▤</div><h3>La bibliothèque prend vie</h3><p>Aucune épreuve ne correspond à ta recherche pour le moment.</p></div>
     </section>
 
-    <section class="contribute-banner">
-      <div class="contribute-icon">＋</div><div><span>CONSTRUISONS CETTE BIBLIOTHÈQUE ENSEMBLE</span><h2>Tu as une ancienne épreuve ?</h2><p>Partage-la avec les autres élèves. Chaque document compte.</p></div><button class="button button-light" id="banner-add">Déposer une épreuve <span>↗</span></button>
-    </section>
   </main>
 
   <section class="admin-screen" id="admin-screen" hidden>
@@ -115,32 +109,6 @@
   </section>
   <footer><a class="brand footer-brand" href="#"><span class="brand-mark"><img src="/assets/logo-epreuves-final.png?v=1" alt=""></span><span class="brand-copy"><strong>ÉPREUVES</strong><small>LYCÉES SCIENTIFIQUES DU TOGO</small></span></a><span>Une initiative de partage des ressources scolaires.</span><span>© <span id="year-now"></span> · Épreuves</span><a class="admin-footer-link" href="#admin">Administration</a></footer>
 
-  <div class="modal-backdrop" id="add-modal" aria-hidden="true">
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal-header"><div><div class="section-kicker">CONTRIBUTION</div><h2 id="modal-title">Ajouter une épreuve</h2><p>Renseigne les informations et joins le document PDF.</p></div><button class="icon-button close-modal" id="close-add" aria-label="Fermer">×</button></div>
-      <form id="exam-form">
-        <div class="form-grid">
-          <label class="form-field full"><span>Établissement <b>*</b></span><select name="campus" id="form-campus" required><option value="">Choisir un établissement</option></select></label>
-          <label class="form-field"><span>Niveau <b>*</b></span><select name="level" required><option value="Secondaire">Secondaire</option></select></label>
-          <label class="form-field"><span>Classe <b>*</b></span><select name="className" required><option value="">Choisir une classe</option><option>Seconde</option><option>Première</option><option>Terminale</option></select></label>
-          <label class="form-field"><span>Série (facultatif)</span><input name="series" placeholder="Ex. : S, C, D…"></label>
-          <label class="form-field"><span>Matière <b>*</b></span><input name="subject" list="subjects" placeholder="Ex. : Mathématiques" required><datalist id="subjects"><option>Mathématiques</option><option>Physique-Chimie</option><option>SVT</option><option>Français</option><option>Anglais</option><option>Informatique</option><option>Philosophie</option><option>Histoire-Géographie</option></datalist></label>
-          <label class="form-field"><span>Type d’évaluation <b>*</b></span><select name="examType" id="form-exam-type" required><option value="">Choisir</option><option value="Devoir">Devoir</option><option value="Composition">Composition</option></select></label>
-          <label class="form-field"><span>Trimestre <b>*</b></span><select name="term" required><option value="">Choisir</option><option value="1">1er trimestre</option><option value="2">2e trimestre</option><option value="3">3e trimestre</option></select></label>
-          <label class="form-field"><span>Numéro du devoir <b>*</b></span><select name="number" id="form-number" required><option value="">Choisir</option><option value="1">1er devoir</option><option value="2">2e devoir</option><option value="composition">Composition</option><option value="other">Autre</option></select></label>
-          <label class="form-field full" id="number-other-field" hidden><span>Précisez le nom de l’évaluation <b>*</b></span><input id="number-other" name="numberOther" maxlength="80" placeholder="Ex. : Interrogation écrite, devoir surveillé…"></label>
-          <label class="form-field"><span>Année scolaire <b>*</b></span><input name="schoolYear" placeholder="Ex. : 2026-2027" pattern="20\d{2}-20\d{2}" required></label>
-          <label class="form-field full"><span>Précision (facultatif)</span><input name="notes" maxlength="180" placeholder="Ex. : épreuve de rattrapage, durée 2 h…"></label>
-          <label class="upload-zone full" for="pdf-file"><span class="upload-icon">↑</span><strong>Choisir le fichier PDF</strong><small>Un seul fichier · 15 Mo maximum</small><span class="file-name" id="file-name">Aucun fichier sélectionné</span><input id="pdf-file" name="pdf" type="file" accept="application/pdf,.pdf" required></label>
-        </div>
-        <label class="spam-trap" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">Ne pas remplir<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
-        <div id="turnstile-container" class="turnstile-container"></div>
-        <div class="form-notice"><span>ⓘ</span><p>Après l’envoi, l’épreuve est vérifiée par un administrateur avant sa publication.</p></div>
-        <div class="form-actions"><button type="button" class="button button-outline" id="cancel-add">Annuler</button><button type="submit" class="button button-primary" id="submit-exam">Envoyer l’épreuve <span>↗</span></button></div>
-        <p class="form-feedback" id="form-feedback" role="status"></p>
-      </form>
-    </section>
-  </div>
   <div class="toast" id="toast" role="status"></div>
 </body>
 </html>
