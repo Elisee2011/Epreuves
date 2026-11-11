@@ -77,14 +77,14 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 
 
 /* Écran de chargement avec logo */
-.site-loader{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#07572f;color:#fff;opacity:1;visibility:visible;transition:opacity .45s ease,visibility .45s ease}
+.site-loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff;opacity:1;visibility:visible;transition:opacity .45s ease,visibility .45s ease}
 .site-loader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.loader-brand{width:116px;height:116px;display:grid;place-items:center;animation:loader-pop .9s cubic-bezier(.2,.8,.2,1) both,loader-breathe 1.8s ease-in-out .9s infinite}
+.loader-brand{width:150px;height:150px;display:grid;place-items:center;animation:loader-pop .9s cubic-bezier(.2,.8,.2,1) both,loader-breathe 1.8s ease-in-out .9s infinite}
 .loader-brand img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 22px #001f0f55)}
-.loader-spinner{width:30px;height:30px;border:3px solid #ffffff45;border-top-color:#f5d45a;border-radius:50%;animation:loader-spin .8s linear infinite}
-.site-loader p{margin:0;font:600 12px "DM Sans",sans-serif;letter-spacing:.5px;color:#e1efe4}
+.loader-spinner{display:none;width:30px;height:30px;border:3px solid #ffffff45;border-top-color:#f5d45a;border-radius:50%;animation:loader-spin .8s linear infinite}
+.site-loader p{display:none;margin:0;font:600 12px "DM Sans",sans-serif;letter-spacing:.5px;color:#e1efe4}
 @keyframes loader-spin{to{transform:rotate(360deg)}}
 @keyframes loader-pop{0%{opacity:0;transform:scale(.55)}70%{opacity:1;transform:scale(1.08)}100%{transform:scale(1)}}
 @keyframes loader-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-@media(max-width:680px){.loader-brand{width:108px;height:108px}}
+@media(max-width:680px){.loader-brand{width:138px;height:138px}}
 @media(prefers-reduced-motion:reduce){.loader-brand,.loader-spinner{animation:none}.site-loader{transition:none}}
