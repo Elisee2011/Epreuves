@@ -88,3 +88,37 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 @keyframes loader-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 @media(max-width:680px){.loader-brand{width:138px;height:138px}}
 @media(prefers-reduced-motion:reduce){.loader-brand,.loader-spinner{animation:none}.site-loader{transition:none}}
+
+
+/* Taille et animations distinctes du logo de chargement */
+.loader-brand{
+  width:50vw;
+  height:50vw;
+  max-width:240px;
+  max-height:240px;
+  animation:loader-appear .75s cubic-bezier(.2,.8,.2,1) both,loader-breathe 1.8s ease-in-out .75s infinite;
+}
+@keyframes loader-appear{
+  0%{opacity:0;transform:scale(.35)}
+  65%{opacity:1;transform:scale(1.08)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes loader-exit{
+  0%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(.65)}
+}
+.site-loader.is-hidden .loader-brand{
+  animation:loader-exit .45s cubic-bezier(.4,0,.7,.2) both;
+}
+.site-loader.is-hidden{
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .45s ease,visibility 0s linear .45s;
+}
+@media(max-width:680px){
+  .loader-brand{width:50vw;height:50vw;max-width:200px;max-height:200px}
+}
+@media(prefers-reduced-motion:reduce){
+  .loader-brand,.site-loader.is-hidden .loader-brand{animation:none}
+  .site-loader{transition:none}
+}
