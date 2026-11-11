@@ -35,3 +35,36 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 @keyframes paper-float{0%,100%{translate:0 0}50%{translate:0 -8px}}
 @keyframes chip-float{0%,100%{translate:0 0}50%{translate:0 -5px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal-ready{opacity:1;transform:none}}
+
+
+/* Ajustement mobile du bloc d'accueil */
+@media(max-width:680px){
+  .hero{min-height:0;padding:48px 22px 30px;display:flex;flex-direction:column}
+  .hero-content{width:100%;max-width:none}
+  .hero h1{font-size:clamp(34px,9vw,42px);line-height:1.12}
+  .hero-content>p{max-width:100%;font-size:14px;line-height:1.65}
+  .hero-art{position:relative;top:auto;right:auto;width:100%;height:190px;margin:22px auto 0;opacity:1;transform:none;animation:none;flex:none}
+  .paper{width:126px;height:168px;padding:15px;border-radius:8px}
+  .paper-back{top:14px;left:calc(50% - 82px);transform:rotate(-10deg)}
+  .paper-front{top:8px;left:calc(50% - 48px);transform:rotate(6deg);padding-top:17px}
+  .paper-front b{font-size:11px;margin:10px 0 4px}
+  .paper-front>span{font-size:9px}
+  .paper-front i,.paper-back i{height:4px;margin-top:10px}
+  .pdf-symbol{height:25px;width:29px;font-size:8px}
+  .paper-stamp{height:30px;width:30px;right:13px;bottom:14px;font-size:8px}
+  .orbit-one{width:230px;height:145px;top:20px;left:calc(50% - 115px)}
+  .orbit-two{width:190px;height:170px;top:4px;left:calc(50% - 95px)}
+  .float-chip{font-size:8px;padding:8px 10px}
+  .chip-top{top:4px;right:calc(50% - 125px)}
+  .chip-bottom{bottom:5px;left:calc(50% - 125px)}
+  .hero-note{margin-top:22px;flex-wrap:wrap}
+}
+/* Animations plus perceptibles */
+@keyframes art-float{0%,100%{translate:0 0}50%{translate:0 -10px}}
+@keyframes paper-float{0%,100%{translate:0 0}50%{translate:0 -9px}}
+.reveal-ready{transition:opacity .8s ease,transform .8s cubic-bezier(.16,1,.3,1);transition-delay:var(--reveal-delay,0ms)}
+.reveal-ready.is-visible{opacity:1;transform:translateY(0)}
+.section-heading h2{transition:letter-spacing .3s ease}
+.section-heading:hover h2{letter-spacing:.2px}
+.campus-card:focus-visible,.exam-card:focus-visible{outline:3px solid #159447;outline-offset:3px}
+@media(max-width:680px){.hero-art{translate:none!important}.paper-front{animation:paper-float 3.8s ease-in-out infinite}}
