@@ -161,27 +161,26 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 @media(max-width:680px){.seo-context{padding:43px 22px}.seo-context p{font-size:12px}}
 
 
-/* Fondu du contenu principal : ne touche pas aux panneaux masqués ni aux éléments système */
-body > header,
-body > main,
-body > footer,
-body > .toast,
-body > #admin-screen:not([hidden]){
-  opacity:0;
-  transition:opacity .5s ease;
-}
-body.site-ready > header,
-body.site-ready > main,
-body.site-ready > footer,
-body.site-ready > .toast,
-body.site-ready > #admin-screen:not([hidden]){
+/* Le voile de chargement disparaît seul : le contenu du site reste visible derrière. */
+.site-loader{
   opacity:1;
+  visibility:visible;
+  transition:opacity .5s ease, visibility 0s linear 0s;
 }
-/* Garantit qu'un panneau portant hidden reste réellement invisible. */
+.site-loader.is-hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .5s ease, visibility 0s linear .5s;
+}
+/* Le logo et le fond blanc s'effacent ensemble, sans animation concurrente. */
+.site-loader .loader-brand,
+.site-loader.is-hidden .loader-brand{
+  animation:none !important;
+}
 [hidden]{display:none!important}
+/* Même fondu demandé, y compris si la préférence système réduit les animations. */
 @media(prefers-reduced-motion:reduce){
-  body > header,body > main,body > footer,body > .toast,body > #admin-screen:not([hidden]){
-    opacity:1;
-    transition:none;
-  }
+  .site-loader{transition:opacity .5s ease, visibility 0s linear 0s !important}
+  .site-loader.is-hidden{transition:opacity .5s ease, visibility 0s linear .5s !important}
 }
