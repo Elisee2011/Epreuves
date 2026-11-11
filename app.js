@@ -171,7 +171,7 @@ function setupPageLoader(){
   };
   // Sécurité : un chargement réseau ou une erreur JS ne doit jamais
   // laisser le voile de chargement affiché indéfiniment.
-  const failsafe=setTimeout(hide,12000);
+  const failsafe=setTimeout(hide,2000);
   window.addEventListener("load",()=>{
     pageLoaded=true;
     tryHide();
