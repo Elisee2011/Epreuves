@@ -113,7 +113,7 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 .site-loader.is-hidden{
   opacity:0;
   visibility:hidden;
-  transition:opacity .45s ease,visibility 0s linear .45s;
+  transition:opacity .5s ease,visibility 0s linear .5s;
 }
 @media(max-width:680px){
   .loader-brand{width:50vw;height:50vw;max-width:200px;max-height:200px}
@@ -165,7 +165,7 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 body > :not(#site-loader){
   opacity:0;
   transition:opacity .5s cubic-bezier(.22,.61,.36,1);
-  transition-delay:.08s;
+  transition-delay:0s;
 }
 body.site-ready > :not(#site-loader){
   opacity:1;
