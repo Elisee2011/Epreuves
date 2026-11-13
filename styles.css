@@ -378,3 +378,12 @@ button,a,select{touch-action:manipulation}
   border-radius:99px;
 }
 .site-loader .loader-progress span{border-radius:99px}
+
+/* Sécurité indépendante de JavaScript : le voile ne peut jamais rester bloqué. */
+.site-loader:not(.is-hidden){
+  animation:loader-emergency-hide .45s ease 4s forwards;
+}
+.site-loader.is-hidden{animation:none}
+@keyframes loader-emergency-hide{
+  to{opacity:0;visibility:hidden;pointer-events:none}
+}
