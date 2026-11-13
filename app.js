@@ -202,6 +202,11 @@ function init(){
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
   $("reset-filters").addEventListener("click",resetFilters);
   setupRevealAnimations();
-  loadExams().finally(()=>window.markAppReady?.());
+  // Sécurité réseau : ne jamais laisser l'écran de chargement bloqué si Supabase ne répond pas.
+  const loaderFallback=setTimeout(()=>window.markAppReady?.(),12000);
+  loadExams().finally(()=>{
+    clearTimeout(loaderFallback);
+    window.markAppReady?.();
+  });
 }
 document.addEventListener("DOMContentLoaded",init);
