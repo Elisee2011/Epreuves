@@ -127,7 +127,7 @@
     if(file.size>15*1024*1024){setFeedback(feedback,"Le PDF dépasse la limite de 15 Mo.");return}
     const campus=$("new-exam-campus").value,className=$("new-exam-class").value;
     const subject=$("new-exam-subject").value.trim(),year=$("new-exam-year").value.trim();
-    if(!/^\\d{4}-\\d{4}$/.test(year)){setFeedback(feedback,"Indique une année scolaire au format 2026-2027.");return}
+    if(!/^\d{4}-\d{4}$/.test(year)){setFeedback(feedback,"Indique une année scolaire au format 2026-2027.");return}
     submit.disabled=true;submit.textContent="Importation…";setFeedback(feedback,"Envoi du PDF en cours…");
     const path="admin/"+Date.now()+"-"+crypto.randomUUID()+".pdf";
     try{
