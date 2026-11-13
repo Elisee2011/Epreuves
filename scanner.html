@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07572f">
+  <meta name="description" content="ÉpreuveScan transforme les photos de feuilles en PDF avec du texte sélectionnable et une mise en page reconstruite.">
+  <title>ÉpreuveScan — Numérisation intelligente</title>
+  <link rel="icon" href="/assets/logo-epreuves-final.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/scanner.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script defer src="/scanner.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Retour à Épreuves"><span class="brand-logo"><img src="/assets/logo-epreuves-final.png" alt=""></span><span><b>ÉPREUVES</b><small>LYCÉES SCIENTIFIQUES DU TOGO</small></span></a>
+    <a class="back-link" href="/">← Bibliothèque</a>
+  </header>
+  <main class="shell">
+    <section class="intro">
+      <div class="eyebrow"><span></span> OUTIL DE NUMÉRISATION INTELLIGENTE</div>
+      <h1>La feuille devient<br><em>un vrai document.</em></h1>
+      <p>Photographie une épreuve ou importe tes images. ÉpreuveScan reconnaît les mots et les replace dans le PDF selon leur position sur la feuille.</p>
+      <div class="privacy"><span>⌑</span> Traitement directement dans ton navigateur · Tes photos ne sont pas envoyées sur un serveur</div>
+    </section>
+
+    <section class="workspace">
+      <div class="step-head"><div><span class="step-number">01</span><div><h2>Ajouter les feuilles</h2><p>Prends une photo ou importe une ou plusieurs images.</p></div></div><span class="format-pill">JPG · PNG · WEBP</span></div>
+      <div class="dropzone" id="dropzone">
+        <div class="drop-icon">＋</div>
+        <strong>Ajoute les photos de tes feuilles</strong>
+        <span>Tu peux sélectionner plusieurs pages à la fois</span>
+        <div class="upload-actions">
+          <label class="action primary">📷 Photographier<input id="camera-input" type="file" accept="image/*" capture="environment"></label>
+          <label class="action secondary">↑ Importer des images<input id="file-input" type="file" accept="image/*" multiple></label>
+        </div>
+        <small>Pour un meilleur résultat : feuille à plat, bonne lumière, photo nette et prise de face.</small>
+      </div>
+      <div id="pages" class="pages" aria-live="polite"></div>
+
+      <div class="process-row">
+        <div class="process-copy"><b>Reconnaissance du document</b><span id="status">En attente de photos</span></div>
+        <button class="action primary process-btn" id="process-btn" disabled>Reconnaître le texte <span>→</span></button>
+      </div>
+      <div class="progress-wrap" id="progress-wrap" hidden><div class="progress-track"><div id="progress-bar"></div></div><span id="progress-label">Préparation…</span></div>
+    </section>
+
+    <section class="workspace results" id="results" hidden>
+      <div class="step-head"><div><span class="step-number">02</span><div><h2>Vérifier le texte reconnu</h2><p>Corrige les éventuelles erreurs avant de créer le PDF.</p></div></div><span class="format-pill">TEXTE MODIFIABLE</span></div>
+      <div class="notice">La position des mots sert à reconstruire la mise en page. Si tu modifies le texte, garde autant que possible le même nombre de mots pour conserver leurs positions et les tableaux.</div>
+      <div id="editors" class="editors"></div>
+      <div class="export-row"><div><b>Prêt à créer ton document ?</b><span>Le PDF contiendra du texte sélectionnable et copiable.</span></div><button class="action primary" id="export-btn">Créer le PDF <span>↓</span></button></div>
+      <p class="footnote">La reconnaissance dépend de la qualité de la photo. Les textes imprimés sont mieux reconnus que les écritures manuscrites. Vérifie toujours le résultat, surtout les formules et les tableaux.</p>
+    </section>
+  </main>
+  <footer><span>ÉpreuveScan</span><span>Un outil de la bibliothèque Épreuves</span></footer>
+  <div class="toast" id="toast" role="status"></div>
+</body>
+</html>
