@@ -184,3 +184,134 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
   .site-loader{transition:opacity .5s ease, visibility 0s linear 0s !important}
   .site-loader.is-hidden{transition:opacity .5s ease, visibility 0s linear .5s !important}
 }
+
+
+/* ─────────────────────────────────────────────
+   ÉPREUVES — Premium UX layer
+   Micro-interactions, hiérarchie, accessibilité et mobile
+───────────────────────────────────────────── */
+:root{
+  --ease-premium:cubic-bezier(.22,1,.36,1);
+  --surface:#fff;
+  --surface-soft:#f6f9f6;
+  --focus-ring:0 0 0 4px rgba(21,148,71,.16);
+}
+html{scroll-padding-top:96px}
+body{background:#fff;letter-spacing:-.12px}
+::selection{background:#d8efdf;color:#063d22}
+:focus-visible{outline:3px solid #159447!important;outline-offset:3px!important;box-shadow:var(--focus-ring)}
+.topbar{height:76px;box-shadow:0 3px 18px rgba(12,55,27,.035);transition:box-shadow .25s ease,background .25s ease}
+.brand{min-height:48px}
+.brand-mark{border-radius:13px}
+.nav-links a{position:relative;padding:12px 0;transition:color .2s ease}
+.nav-links a:after{content:"";position:absolute;left:0;right:100%;bottom:5px;height:2px;border-radius:2px;background:#159447;transition:right .28s var(--ease-premium)}
+.nav-links a:hover:after,.nav-links a:focus-visible:after{right:0}
+.button,.download-button,.icon-button,.text-button,.admin-item-actions button{min-height:44px}
+.button{border-radius:12px;transition:transform .24s var(--ease-premium),box-shadow .24s ease,background .2s ease}
+.button-primary{background:linear-gradient(135deg,#07572f,#0b7840);box-shadow:0 8px 20px rgba(7,87,47,.17)}
+.button-primary:hover{transform:translateY(-2px);box-shadow:0 13px 26px rgba(7,87,47,.23)}
+.button-light:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.13)}
+.hero{background:radial-gradient(ellipse at 82% 15%,rgba(245,212,90,.13),transparent 34%),linear-gradient(118deg,#053d22 0%,#07572f 58%,#0b7040 100%)}
+.hero h1{letter-spacing:-2.8px}
+.hero-content>p{max-width:540px}
+.stats-row{background:#fff}
+.stats-row>div:not(.stats-message){gap:15px}
+.stats-row strong{letter-spacing:-1px}
+.section{scroll-margin-top:90px}
+.section-heading{gap:18px}
+.section h2{letter-spacing:-1.1px}
+.campus-grid{gap:15px}
+.campus-card{
+  min-height:132px;padding:20px;border-radius:16px;
+  transition:transform .3s var(--ease-premium),box-shadow .3s ease,border-color .25s ease,background .25s ease;
+}
+.campus-card:hover{transform:translateY(-5px);box-shadow:0 18px 38px rgba(7,87,47,.11)}
+.campus-card.active{border-color:#159447;background:linear-gradient(145deg,#f5fbf6,#fff);box-shadow:0 0 0 1px #15944726,0 12px 28px rgba(7,87,47,.08)}
+.campus-icon{border-radius:12px;transition:transform .3s var(--ease-premium),background .25s ease}
+.campus-card:hover .campus-icon{transform:scale(1.08) rotate(-4deg);background:#d9efdf}
+.library-section{background:linear-gradient(180deg,#f5f8f5 0%,#f8faf8 100%)}
+.filter-panel{gap:10px;padding:14px;border-radius:16px;box-shadow:0 12px 32px rgba(12,55,27,.055)}
+.search-box,.filter-field{border-radius:11px;transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+.search-box:focus-within,.filter-field:focus-within{border-color:#159447;box-shadow:var(--focus-ring);background:#fff}
+.search-box input,.filter-field select{min-height:42px}
+.results-bar{align-items:center;margin-top:25px}
+.exam-list{gap:11px}
+.exam-card{
+  min-height:88px;padding:17px 19px;border-radius:14px;border-color:#e7eee8;
+  box-shadow:0 2px 8px rgba(12,55,27,.018);
+  transition:transform .28s var(--ease-premium),box-shadow .28s ease,border-color .2s ease;
+}
+.exam-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(12,55,27,.075);border-color:#c8dfce}
+.pdf-icon{border-radius:11px}
+.exam-info strong{font-size:13px;line-height:1.5}
+.tag{border-radius:6px}
+.download-button{border-radius:10px;padding:9px 14px;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+.download-button:hover{background:#eaf5ec;border-color:#c4dfca;transform:translateY(-1px)}
+.empty-state{padding-top:68px;padding-bottom:28px}
+.empty-icon{border-radius:17px}
+.admin-auth,.admin-section,.admin-stats>div{border-radius:16px}
+.admin-item{border-radius:13px}
+.admin-item-actions button{border-radius:9px;transition:background .2s ease,border-color .2s ease,transform .2s ease}
+.admin-item-actions button:hover{background:#f3f8f4;border-color:#c6ddcb;transform:translateY(-1px)}
+.admin-item-actions .danger:hover{background:#fff5f5;border-color:#efc4c9}
+.toast{border-radius:12px;box-shadow:0 12px 35px rgba(0,0,0,.15)}
+/* Réponses tactiles rapides : les animations ne bloquent jamais l'action. */
+button,a,select{touch-action:manipulation}
+@media(hover:none){
+  .campus-card:hover,.exam-card:hover,.button-primary:hover{transform:none;box-shadow:none}
+}
+@media(max-width:900px){
+  .topbar{padding-inline:24px}
+  .hero{padding-left:6vw;padding-right:6vw}
+  .stats-row,.section{padding-left:6vw;padding-right:6vw}
+  .campus-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .filter-panel{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .search-box{grid-column:1/-1}
+}
+@media(max-width:680px){
+  .topbar{height:68px;padding:0 17px}
+  .brand-mark{width:45px;height:45px}
+  .brand-copy strong{font-size:13px}
+  .brand-copy small{font-size:7px;letter-spacing:1px}
+  .nav-links{gap:17px;margin-right:0}
+  .nav-links a{font-size:11px}
+  .hero{min-height:500px;padding:42px 22px}
+  .hero h1{font-size:clamp(34px,9vw,43px);letter-spacing:-1.8px}
+  .hero-content>p{font-size:13px;line-height:1.75}
+  .hero-actions .button{width:100%;min-height:48px}
+  .hero-note{font-size:10px}
+  .stats-row{padding:23px 22px;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+  .stats-row>div:not(.stats-message){gap:9px}
+  .stats-row strong{font-size:21px}
+  .stats-message{justify-self:start;grid-column:1/-1}
+  .section{padding:58px 20px}
+  .section-heading{align-items:flex-start;margin-bottom:22px}
+  .section h2{font-size:24px;line-height:1.2}
+  .section-heading p{font-size:12px;line-height:1.65}
+  .section-count{font-size:9px;white-space:nowrap}
+  .campus-grid{gap:10px}
+  .campus-card{min-height:116px;padding:15px;border-radius:14px}
+  .campus-card strong{font-size:14px;margin-top:17px}
+  .campus-icon{width:30px;height:30px;right:12px;top:12px}
+  .campus-number{font-size:8px}
+  .filter-panel{grid-template-columns:1fr;padding:10px;border-radius:14px}
+  .search-box{grid-column:auto}
+  .search-box input{font-size:13px}
+  .filter-field{min-height:58px;padding:7px 11px}
+  .filter-field select{font-size:12px}
+  .results-bar{gap:12px;font-size:10px;line-height:1.4}
+  .results-sort{white-space:nowrap}
+  .exam-card{padding:13px;gap:10px;align-items:flex-start;flex-wrap:wrap}
+  .pdf-icon{width:38px;height:43px}
+  .exam-info{flex:1 1 calc(100% - 52px)}
+  .exam-info strong{font-size:12px}
+  .exam-info p{font-size:10px}
+  .exam-date{margin-left:48px;order:3}
+  .download-button{margin-left:auto;order:4;min-height:42px}
+  .empty-state{padding-top:45px}
+  footer{gap:15px;flex-wrap:wrap;padding:25px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .campus-card,.exam-card,.button,.download-button,.nav-links a:after{transition:none!important}
+  .hero-art,.paper-front,.float-chip{animation:none!important}
+}
