@@ -188,6 +188,8 @@ function setupPageLoader(){
   }
   window.markAppReady=()=>{
     appReady=true;
+    // Le délai de sécurité autorise aussi la fermeture si l'événement window.load est bloqué.
+    pageLoaded=true;
     setProgress(92);
     tryHide();
   };
