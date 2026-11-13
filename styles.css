@@ -366,3 +366,15 @@ button,a,select{touch-action:manipulation}
 
 @media(max-width:480px){.loader-kicker{font-size:9px;letter-spacing:2px}.loader-title{letter-spacing:-2.5px}.loader-content p{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.loader-content,.loader-kicker,.loader-title span,.loader-content p{animation:none!important;opacity:1!important;transform:none!important;clip-path:none!important}.loader-progress span{transition:none!important}}
+
+
+/* Barre de progression placée juste sous le titre ÉPREUVES */
+.site-loader .loader-progress{
+  position:relative;
+  left:auto;right:auto;bottom:auto;
+  width:min(100%,420px);
+  height:4px;
+  margin-top:18px;
+  border-radius:99px;
+}
+.site-loader .loader-progress span{border-radius:99px}
