@@ -130,7 +130,22 @@
         <div class="admin-heading"><div><div class="section-kicker">TABLEAU DE BORD</div><h1>Gestion des épreuves</h1><p id="admin-identity"></p></div><button class="button button-outline" id="admin-logout">Déconnexion</button></div>
         <div class="admin-stats"><div><strong id="pending-count">0</strong><span>En attente</span></div><div><strong id="published-count">0</strong><span>Publiées</span></div></div>
         <div class="admin-section"><h2>Épreuves à valider</h2><div id="pending-list" class="admin-list"></div><p class="admin-feedback" id="pending-feedback"></p></div>
-        <div class="admin-section" id="admins-section" hidden><h2>Administrateurs</h2><form id="add-admin-form" class="add-admin-form"><input id="new-admin-email" type="email" placeholder="Adresse e-mail du nouvel administrateur" required><button class="button button-primary" type="submit">Ajouter</button></form><div id="admins-list" class="admin-list"></div><p class="admin-feedback" id="admins-feedback"></p></div>
+        <div class="admin-section"><h2>Ajouter une épreuve</h2><form id="admin-add-exam-form" class="admin-exam-form">
+  <label class="form-field"><span>Établissement</span><select id="new-exam-campus" required><option value="">Choisir un établissement</option><option>Lomé</option><option>Atakpamé</option><option>Kara</option><option>Sokodé</option><option>Dapaong</option><option>Tsévié</option><option>Kpalimé</option></select></label>
+  <label class="form-field"><span>Classe</span><select id="new-exam-class" required><option value="">Choisir une classe</option><option>Seconde</option><option>Première</option><option>Terminale</option></select></label>
+  <label class="form-field"><span>Série (facultatif)</span><input id="new-exam-series" maxlength="20" placeholder="Ex. S, C, D…"></label>
+  <label class="form-field"><span>Matière</span><input id="new-exam-subject" maxlength="80" required placeholder="Ex. Mathématiques"></label>
+  <label class="form-field"><span>Type d'épreuve</span><select id="new-exam-type" required><option>Devoir</option><option>Composition</option></select></label>
+  <label class="form-field"><span>Trimestre</span><select id="new-exam-term" required><option value="1">1er trimestre</option><option value="2">2e trimestre</option><option value="3">3e trimestre</option></select></label>
+  <label class="form-field"><span>Numéro</span><select id="new-exam-number" required><option value="1">1er devoir</option><option value="2">2e devoir</option><option value="composition">Composition</option><option value="other">Autre évaluation</option></select></label>
+  <label class="form-field"><span>Année scolaire</span><input id="new-exam-year" required maxlength="9" placeholder="2026-2027" pattern="\\d{4}-\\d{4}"></label>
+  <label class="form-field admin-file-field"><span>Document PDF (15 Mo maximum)</span><input id="new-exam-pdf" type="file" accept="application/pdf,.pdf" required></label>
+  <label class="form-field admin-notes-field"><span>Informations complémentaires (facultatif)</span><textarea id="new-exam-notes" maxlength="500" rows="2" placeholder="Précisions utiles pour les élèves"></textarea></label>
+  <button class="button button-primary" id="admin-add-exam-submit" type="submit">Importer et publier</button>
+  <p class="admin-feedback admin-form-feedback" id="admin-add-exam-feedback" role="status"></p>
+</form></div>
+<div class="admin-section"><h2>Épreuves publiées</h2><div id="published-list" class="admin-list"></div><p class="admin-feedback" id="published-feedback"></p></div>
+<div class="admin-section" id="admins-section" hidden><h2>Administrateurs</h2><form id="add-admin-form" class="add-admin-form"><input id="new-admin-email" type="email" placeholder="Adresse e-mail du nouvel administrateur" required><button class="button button-primary" type="submit">Ajouter</button></form><div id="admins-list" class="admin-list"></div><p class="admin-feedback" id="admins-feedback"></p></div>
       </div>
     </div>
   </section>
