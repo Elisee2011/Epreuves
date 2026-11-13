@@ -387,3 +387,18 @@ button,a,select{touch-action:manipulation}
 @keyframes loader-emergency-hide{
   to{opacity:0;visibility:hidden;pointer-events:none}
 }
+
+/* La progression atteint 100 % juste avant la disparition du loader. */
+.site-loader:not(.is-hidden) .loader-progress span{
+  animation:loader-progress-finish .45s ease 3.55s forwards;
+}
+@keyframes loader-progress-finish{
+  to{transform:scaleX(1)}
+}
+/* Lors d'une fermeture normale, laisser la barre finir sa transition
+   pendant que le contenu disparaît, sans raccourcir le loader. */
+.site-loader.is-hidden .loader-progress span{
+  opacity:1;
+  transition:transform .35s cubic-bezier(.2,.7,.2,1),opacity .35s ease;
+}
+
