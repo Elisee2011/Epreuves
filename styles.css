@@ -199,7 +199,9 @@ footer{border-top:1px solid var(--line);padding:25px max(5.5vw,24px);display:fle
 html{scroll-padding-top:96px}
 body{background:#fff;letter-spacing:-.12px}
 ::selection{background:#d8efdf;color:#063d22}
-:focus-visible{outline:3px solid #159447!important;outline-offset:3px!important;box-shadow:var(--focus-ring)}
+:focus-visible{outline:none!important;box-shadow:none!important}
+button:focus-visible,a:focus-visible,[role="button"]:focus-visible{outline:2px solid rgba(21,148,71,.48)!important;outline-offset:2px!important;box-shadow:0 0 0 2px rgba(21,148,71,.07)!important}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:none!important;box-shadow:none!important}
 .topbar{height:76px;box-shadow:0 3px 18px rgba(12,55,27,.035);transition:box-shadow .25s ease,background .25s ease}
 .brand{min-height:48px}
 .brand-mark{border-radius:13px}
@@ -232,7 +234,7 @@ body{background:#fff;letter-spacing:-.12px}
 .library-section{background:linear-gradient(180deg,#f5f8f5 0%,#f8faf8 100%)}
 .filter-panel{gap:10px;padding:14px;border-radius:16px;box-shadow:0 12px 32px rgba(12,55,27,.055)}
 .search-box,.filter-field{border-radius:11px;transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
-.search-box:focus-within,.filter-field:focus-within{border-color:#159447;box-shadow:var(--focus-ring);background:#fff}
+.search-box:focus-within,.filter-field:focus-within{border-color:#a9cdb2;box-shadow:0 0 0 2px rgba(21,148,71,.045);background:#fff}
 .search-box input,.filter-field select{min-height:42px}
 .results-bar{align-items:center;margin-top:25px}
 .exam-list{gap:11px}
@@ -326,7 +328,7 @@ button,a,select{touch-action:manipulation}
   color:var(--ink);font:500 13px "DM Sans",sans-serif;
 }
 .admin-exam-form textarea{resize:vertical;min-height:76px}
-.admin-exam-form input:focus,.admin-exam-form select:focus,.admin-exam-form textarea:focus{outline:3px solid #15944724;border-color:#159447}
+.admin-exam-form input:focus,.admin-exam-form select:focus,.admin-exam-form textarea:focus{outline:none;border-color:#8fbd9b;box-shadow:0 0 0 2px rgba(21,148,71,.07)}
 .admin-file-field,.admin-notes-field,.admin-exam-form>button,.admin-form-feedback{grid-column:1/-1}
 .admin-exam-form input[type=file]{padding:9px}
 .admin-exam-form>button{justify-self:start;min-width:190px}
