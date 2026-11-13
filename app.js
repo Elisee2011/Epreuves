@@ -151,15 +151,22 @@ async function loadExams(){
 function setupPageLoader(){
   const loader=$("site-loader");
   if(!loader)return;
-  const startedAt=performance.now();
+  const bar=loader.querySelector(".loader-progress span");
   let pageLoaded=document.readyState==="complete";
   let appReady=false;
   let hidingScheduled=false;
   let removed=false;
+  let progress=5;
+  const setProgress=value=>{
+    progress=Math.max(progress,Math.min(100,value));
+    if(bar)bar.style.transform=`scaleX(${progress/100})`;
+    loader.setAttribute("aria-label",`Chargement du site : ${Math.round(progress)} %`);
+  };
+  setProgress(pageLoaded?70:5);
   const hide=()=>{
     if(removed)return;
     removed=true;
-    // Laisser le navigateur peindre l'état initial avant de lancer le fondu.
+    setProgress(100);
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       document.body.classList.add("site-ready");
       loader.classList.add("is-hidden");
@@ -169,22 +176,25 @@ function setupPageLoader(){
   const tryHide=()=>{
     if(!pageLoaded||!appReady||hidingScheduled)return;
     hidingScheduled=true;
-    clearTimeout(failsafe);
-    const remaining=Math.max(0,1500-(performance.now()-startedAt));
-    setTimeout(hide,remaining);
+    hide();
   };
-  // Sécurité : un chargement réseau ou une erreur JS ne doit jamais
-  // laisser le voile de chargement affiché indéfiniment.
-  const failsafe=setTimeout(hide,2000);
-  window.addEventListener("load",()=>{
-    pageLoaded=true;
-    tryHide();
-  },{once:true});
+  if(!pageLoaded){
+    document.addEventListener("DOMContentLoaded",()=>setProgress(35),{once:true});
+    window.addEventListener("load",()=>{
+      pageLoaded=true;
+      setProgress(75);
+      tryHide();
+    },{once:true});
+  }
   window.markAppReady=()=>{
     appReady=true;
+    setProgress(92);
     tryHide();
   };
+  // Si l'application rencontre une erreur bloquante, ne pas masquer le site indéfiniment.
+  window.addEventListener("error",()=>{ if(pageLoaded&&appReady)tryHide(); });
 }
+
 function init(){
   setupPageLoader();
   $("year-now").textContent=new Date().getFullYear();
