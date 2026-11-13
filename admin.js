@@ -30,7 +30,23 @@
     $("admin-identity").textContent=user.email+" · "+(membership.role==="super_admin"?"Super-administrateur":"Administrateur");
     $("admins-section").hidden=membership.role!=="super_admin";
     await loadExams();
+    await loadPublished();
     if(membership.role==="super_admin") await loadAdmins();
+  }
+
+  async function loadPublished(){
+    const {data,error}=await client.from("exams").select("*").eq("status","approved").order("created_at",{ascending:false});
+    if(error){setFeedback("published-feedback","Impossible de charger les épreuves publiées.");return}
+    $("published-count").textContent=(data||[]).length;
+    const list=$("published-list");list.innerHTML="";
+    if(!data?.length){list.innerHTML='<p class="admin-empty">Aucune épreuve publiée pour le moment.</p>';return}
+    data.forEach(item=>{
+      const card=document.createElement("article");card.className="admin-item";
+      card.innerHTML='<div class="pdf-icon">PDF</div><div class="admin-item-main"><strong>'+escapeHtml(item.subject)+' · '+escapeHtml(item.campus)+'</strong><small>'+escapeHtml(item.class_name)+(item.series?' · Série '+escapeHtml(item.series):'')+' · '+escapeHtml(item.exam_type)+' · '+escapeHtml(item.school_year)+'</small></div><div class="admin-item-actions"><button type="button" data-action="view">Voir PDF</button><button type="button" class="danger" data-action="delete">Supprimer</button></div>';
+      card.querySelector('[data-action="view"]').addEventListener("click",()=>{const {data}=client.storage.from("exam-pdfs").getPublicUrl(item.file_path);window.open(data.publicUrl,"_blank","noopener")});
+      card.querySelector('[data-action="delete"]').addEventListener("click",()=>deleteExam(item.id));
+      list.append(card);
+    });
   }
 
   async function loadExams(){
@@ -63,7 +79,7 @@
     if(!confirm("Supprimer définitivement cette épreuve et son PDF ?"))return;
     const {data,error}=await client.functions.invoke("manage-admins",{body:{action:"delete_exam",exam_id:id}});
     if(error||data?.error){setFeedback("pending-feedback",data?.error||"Suppression impossible.");return}
-    setFeedback("pending-feedback","Épreuve supprimée.",true);await loadExams();
+    setFeedback("pending-feedback","Épreuve supprimée.",true);setFeedback("published-feedback","Épreuve supprimée.",true);await loadExams();await loadPublished();
   }
 
   async function loadAdmins(){
@@ -101,6 +117,42 @@
     if(error){setFeedback("admin-auth-feedback",error.message);return}
     if(data.session){setFeedback("admin-auth-feedback","Compte créé.");await loadDashboard()}
     else setFeedback("admin-auth-feedback","Compte créé. Confirme ton adresse depuis l'e-mail reçu, puis connecte-toi.",true);
+  });
+  $("admin-add-exam-form").addEventListener("submit",async event=>{
+    event.preventDefault();
+    const feedback="admin-add-exam-feedback",submit=$("admin-add-exam-submit");
+    const file=$("new-exam-pdf").files[0];
+    if(!file){setFeedback(feedback,"Sélectionne un fichier PDF.");return}
+    if(file.type!=="application/pdf"&&!file.name.toLowerCase().endsWith(".pdf")){setFeedback(feedback,"Le fichier doit être au format PDF.");return}
+    if(file.size>15*1024*1024){setFeedback(feedback,"Le PDF dépasse la limite de 15 Mo.");return}
+    const campus=$("new-exam-campus").value,className=$("new-exam-class").value;
+    const subject=$("new-exam-subject").value.trim(),year=$("new-exam-year").value.trim();
+    if(!/^\\d{4}-\\d{4}$/.test(year)){setFeedback(feedback,"Indique une année scolaire au format 2026-2027.");return}
+    submit.disabled=true;submit.textContent="Importation…";setFeedback(feedback,"Envoi du PDF en cours…");
+    const path="admin/"+Date.now()+"-"+crypto.randomUUID()+".pdf";
+    try{
+      const {error:uploadError}=await client.storage.from("exam-pdfs").upload(path,file,{contentType:"application/pdf",upsert:false});
+      if(uploadError)throw uploadError;
+      const type=$("new-exam-type").value;
+      const number=type==="Composition"?"composition":$("new-exam-number").value;
+      const {error:insertError}=await client.from("exams").insert({
+        campus,level:"Secondaire",class_name:className,series:$("new-exam-series").value.trim()||null,
+        subject,exam_type:type,term:Number($("new-exam-term").value),number,school_year:year,
+        notes:$("new-exam-notes").value.trim()||null,file_path:path,status:"approved"
+      });
+      if(insertError){
+        await client.storage.from("exam-pdfs").remove([path]);
+        throw insertError;
+      }
+      $("admin-add-exam-form").reset();
+      setFeedback(feedback,"Épreuve ajoutée et publiée avec succès.",true);
+      await loadExams();await loadPublished();
+    }catch(error){
+      console.error("Admin exam upload:",error);
+      setFeedback(feedback,error?.message||"L'ajout de l'épreuve a échoué. Réessaie.");
+    }finally{
+      submit.disabled=false;submit.textContent="Importer et publier";
+    }
   });
   $("admin-logout").addEventListener("click",async()=>{await client.auth.signOut();await loadDashboard()});
   $("add-admin-form").addEventListener("submit",async event=>{
