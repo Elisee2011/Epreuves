@@ -356,13 +356,13 @@ button,a,select{touch-action:manipulation}
 .loader-title span{display:block;width:max-content;max-width:100%;white-space:nowrap;clip-path:inset(0 100% 0 0);animation:loader-word-reveal 1s cubic-bezier(.7,0,.2,1) .18s forwards}
 .loader-content p{margin:18px 0 0;color:#d8eadc;font:500 13px "DM Sans",sans-serif;letter-spacing:.15px;opacity:0;transform:translateY(8px);animation:loader-caption-in .55s ease .72s forwards}
 .loader-progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.16);overflow:hidden}
-.loader-progress span{display:block;width:100%;height:100%;background:linear-gradient(90deg,#a9dfb6,#f1d66b);transform:scaleX(0);transform-origin:left;animation:loader-progress-fill 1.8s cubic-bezier(.4,0,.2,1) forwards}
+.loader-progress span{display:block;width:100%;height:100%;background:linear-gradient(90deg,#a9dfb6,#f1d66b);transform:scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
 .site-loader.is-hidden .loader-content{opacity:0;transform:translateY(-8px);transition:opacity .28s ease,transform .28s ease}
 .site-loader.is-hidden .loader-progress span{opacity:0;transition:opacity .15s ease}
 @keyframes loader-content-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes loader-kicker-in{to{opacity:1}}
 @keyframes loader-word-reveal{to{clip-path:inset(0 0 0 0)}}
 @keyframes loader-caption-in{to{opacity:1;transform:translateY(0)}}
-@keyframes loader-progress-fill{to{transform:scaleX(1)}}
+
 @media(max-width:480px){.loader-kicker{font-size:9px;letter-spacing:2px}.loader-title{letter-spacing:-2.5px}.loader-content p{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.loader-content,.loader-kicker,.loader-title span,.loader-content p,.loader-progress span{animation:none!important;opacity:1!important;transform:none!important;clip-path:none!important}}
