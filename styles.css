@@ -315,3 +315,25 @@ button,a,select{touch-action:manipulation}
   .campus-card,.exam-card,.button,.download-button,.nav-links a:after{transition:none!important}
   .hero-art,.paper-front,.float-chip{animation:none!important}
 }
+
+
+/* Administration — ajout et gestion des épreuves */
+.admin-exam-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.admin-exam-form .form-field{display:grid;gap:7px;font-size:12px;font-weight:700;color:var(--ink)}
+.admin-exam-form input,.admin-exam-form select,.admin-exam-form textarea{
+  width:100%;min-width:0;min-height:44px;padding:10px 12px;
+  border:1px solid var(--line);border-radius:10px;background:#fff;
+  color:var(--ink);font:500 13px "DM Sans",sans-serif;
+}
+.admin-exam-form textarea{resize:vertical;min-height:76px}
+.admin-exam-form input:focus,.admin-exam-form select:focus,.admin-exam-form textarea:focus{outline:3px solid #15944724;border-color:#159447}
+.admin-file-field,.admin-notes-field,.admin-exam-form>button,.admin-form-feedback{grid-column:1/-1}
+.admin-exam-form input[type=file]{padding:9px}
+.admin-exam-form>button{justify-self:start;min-width:190px}
+.admin-list .admin-item{align-items:center}
+.admin-item-actions button[data-action="delete"]{color:#b23b4c}
+@media(max-width:600px){
+  .admin-exam-form{grid-template-columns:1fr}
+  .admin-file-field,.admin-notes-field,.admin-exam-form>button,.admin-form-feedback{grid-column:auto}
+  .admin-exam-form>button{width:100%}
+}
