@@ -203,7 +203,7 @@ function init(){
   $("reset-filters").addEventListener("click",resetFilters);
   setupRevealAnimations();
   // Sécurité réseau : ne jamais laisser l'écran de chargement bloqué si Supabase ne répond pas.
-  const loaderFallback=setTimeout(()=>window.markAppReady?.(),12000);
+  const loaderFallback=setTimeout(()=>window.markAppReady?.(),4000);
   loadExams().finally(()=>{
     clearTimeout(loaderFallback);
     window.markAppReady?.();
