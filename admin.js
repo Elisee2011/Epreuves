@@ -16,22 +16,12 @@
   window.addEventListener("hashchange",route);route();
 
   async function loadDashboard(){
-    const {data:{session}}=await client.auth.getSession();
-    if(!session){$("admin-auth").hidden=false;$("admin-dashboard").hidden=true;return}
-    const user=session.user;
-    const {data:membership,error}=await client.from("admins").select("role").eq("user_id",user.id).maybeSingle();
-    if(error||!membership){
-      await client.auth.signOut();
-      $("admin-auth").hidden=false;$("admin-dashboard").hidden=true;
-      setFeedback("admin-auth-feedback","Ce compte n'a pas les droits d'administration.");
-      return;
-    }
-    $("admin-auth").hidden=true;$("admin-dashboard").hidden=false;
-    $("admin-identity").textContent=user.email+" · "+(membership.role==="super_admin"?"Super-administrateur":"Administrateur");
-    $("admins-section").hidden=membership.role!=="super_admin";
+    $("admin-auth").hidden=true;
+    $("admin-dashboard").hidden=false;
+    $("admins-section").hidden=true;
+    $("admin-identity").textContent="Mode public temporaire — accès sans connexion";
     await loadExams();
     await loadPublished();
-    if(membership.role==="super_admin") await loadAdmins();
   }
 
   async function loadPublished(){
@@ -77,9 +67,17 @@
   }
   async function deleteExam(id){
     if(!confirm("Supprimer définitivement cette épreuve et son PDF ?"))return;
-    const {data,error}=await client.functions.invoke("manage-admins",{body:{action:"delete_exam",exam_id:id}});
-    if(error||data?.error){setFeedback("pending-feedback",data?.error||"Suppression impossible.");return}
-    setFeedback("pending-feedback","Épreuve supprimée.",true);setFeedback("published-feedback","Épreuve supprimée.",true);await loadExams();await loadPublished();
+    const {data:exam,error:lookupError}=await client.from("exams").select("file_path").eq("id",id).maybeSingle();
+    if(lookupError||!exam){setFeedback("pending-feedback","Épreuve introuvable ou suppression impossible.");return}
+    const {error:deleteError}=await client.from("exams").delete().eq("id",id);
+    if(deleteError){setFeedback("pending-feedback","Suppression impossible.");return}
+    if(exam.file_path){
+      const {error:storageError}=await client.storage.from("exam-pdfs").remove([exam.file_path]);
+      if(storageError)console.warn("PDF non supprimé du stockage:",storageError);
+    }
+    setFeedback("pending-feedback","Épreuve supprimée.",true);
+    setFeedback("published-feedback","Épreuve supprimée.",true);
+    await loadExams();await loadPublished();
   }
 
   async function loadAdmins(){
