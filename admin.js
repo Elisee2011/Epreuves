@@ -18,6 +18,7 @@
   async function loadDashboard(){
     $("admin-auth").hidden=true;
     $("admin-dashboard").hidden=false;
+    $("admin-logout").hidden=true;
     $("admins-section").hidden=true;
     $("admin-identity").textContent="Mode public temporaire — accès sans connexion";
     await loadExams();
