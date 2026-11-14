@@ -10,7 +10,7 @@ const campuses = ["Lomé","Atakpamé","Kara","Sokodé","Dapaong","Tsévié","Kpa
 const campusIcons = ["⌂","⌁","◇","▦","✳","⌖","⌂"];
 const $ = (id) => document.getElementById(id);
 const supabaseReady = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
-const db = supabaseReady ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const db = supabaseReady ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { global: { fetch: (url, options = {}) => fetch(url, { ...options, cache: "no-store" }) } }) : null;
 let exams = [];
 let selectedCampus = "";
 let localDbPromise;
@@ -136,16 +136,66 @@ async function openExam(item){
     window.open(url,"_blank","noopener");
   }catch(error){showToast(error.message||"Impossible d'ouvrir ce PDF.");}
 }
-async function loadExams(){
-  if(!db){
-    exams=[];
-    showToast("Supabase n'est pas encore configuré. Les épreuves ne peuvent pas être chargées.");
-  }else{
-    const {data,error}=await db.from("exams").select("*").eq("status","approved").order("created_at",{ascending:false});
-    if(error){console.error(error);showToast("Impossible de charger les épreuves depuis Supabase.");exams=[];}
-    else exams=data||[];
-  }
-  updateYearFilter();updateStats();renderExams();setupRevealAnimations();
+let publicLoadInProgress = null;
+let publicRealtimeChannel = null;
+let publicRefreshTimer = null;
+let lastPublicRefresh = 0;
+
+async function loadExams({silent=false}={}){
+  if(publicLoadInProgress)return publicLoadInProgress;
+  publicLoadInProgress=(async()=>{
+    if(!db){
+      if(!silent)showToast("Supabase n'est pas encore configuré. Les épreuves ne peuvent pas être chargées.");
+      return;
+    }
+    try{
+      const {data,error}=await db.from("exams").select("*").eq("status","approved").order("created_at",{ascending:false});
+      if(error)throw error;
+      // Ne remplacer la liste qu'après une réponse valide.
+      exams=Array.isArray(data)?data:[];
+      lastPublicRefresh=Date.now();
+      updateYearFilter();updateStats();renderExams();setupRevealAnimations();
+    }catch(error){
+      console.error("Public exams refresh:",error);
+      if(!silent)showToast("Impossible d'actualiser les épreuves. Réessaie dans un instant.");
+    }
+  })();
+  try{await publicLoadInProgress;}finally{publicLoadInProgress=null;}
+}
+
+function schedulePublicRefresh(){
+  clearTimeout(publicRefreshTimer);
+  publicRefreshTimer=setTimeout(()=>loadExams({silent:true}),350);
+}
+
+function setupPublicExamSync(){
+  if(!db)return;
+  publicRealtimeChannel=db.channel("public-exams-live")
+    .on("postgres_changes",{event:"*",schema:"public",table:"exams"},schedulePublicRefresh)
+    .subscribe(status=>{
+      if(status==="SUBSCRIBED")loadExams({silent:true});
+    });
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden && Date.now()-lastPublicRefresh>3000)loadExams({silent:true});
+  });
+  window.addEventListener("focus",()=>{
+    if(Date.now()-lastPublicRefresh>3000)loadExams({silent:true});
+  });
+  window.addEventListener("pageshow",()=>loadExams({silent:true}));
+  window.addEventListener("online",()=>loadExams({silent:true}));
+  setInterval(()=>{
+    if(!document.hidden)loadExams({silent:true});
+  },60000);
+}
+
+function resetFilters(){
+  ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>{
+    const field=$(id);if(field)field.value="";
+  });
+  selectedCampus="";
+  renderCampuses();
+  renderExams();
+  loadExams({silent:true});
 }
 
 function setupPageLoader(){
@@ -204,6 +254,7 @@ function init(){
   ["search-input","filter-campus","filter-class","filter-term","filter-year"].forEach(id=>$(id).addEventListener(id==="search-input"?"input":"change",()=>{if(id==="filter-campus"){selectedCampus=$(id).value;renderCampuses()}renderExams()}));
   $("reset-filters").addEventListener("click",resetFilters);
   setupRevealAnimations();
+  setupPublicExamSync();
   // Sécurité réseau : ne jamais laisser l'écran de chargement bloqué si Supabase ne répond pas.
   const loaderFallback=setTimeout(()=>window.markAppReady?.(),2000);
   loadExams().finally(()=>{
