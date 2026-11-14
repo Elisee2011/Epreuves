@@ -2,7 +2,7 @@
   const URL="https://cigtsvzyeaxluneexnsa.supabase.co";
   const KEY="sb_publishable_AUky4UeugSkRErIjG_yMRw_vetPlrwY";
   const OWNER="eliseeedemagbebavi@gmail.com";
-  const client=window.supabase.createClient(URL,KEY);
+  const client=window.supabase.createClient(URL,KEY,{global:{fetch:(url,options={})=>fetch(url,{...options,cache:"no-store"})}});
   const $=id=>document.getElementById(id);
   const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const setFeedback=(id,message,success=false)=>{const el=$(id);if(el){el.textContent=message;el.classList.toggle("success",success)}};
@@ -73,7 +73,7 @@
     const {error}=await client.from("exams").update({status}).eq("id",id);
     if(error){setFeedback("pending-feedback","La modification a échoué.");return}
     setFeedback("pending-feedback",status==="approved"?"Épreuve publiée.":"Épreuve refusée.",true);
-    await loadExams();
+    await loadExams();await loadPublished();
   }
   async function deleteExam(id){
     if(!confirm("Supprimer définitivement cette épreuve et son PDF ?"))return;
