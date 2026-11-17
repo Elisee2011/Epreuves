@@ -402,3 +402,27 @@ button,a,select{touch-action:manipulation}
   transition:transform .35s cubic-bezier(.2,.7,.2,1),opacity .35s ease;
 }
 
+
+/* Détection et traitement des épreuves en double */
+.duplicate-review{margin:22px 0 28px;padding:clamp(18px,3vw,28px);border:1px solid #e5e9e5;border-radius:20px;background:#fbfcfb}
+.duplicate-review[hidden]{display:none}.duplicate-review-heading{margin-bottom:18px}
+.duplicate-eyebrow{font-size:10px;font-weight:800;letter-spacing:1.6px;color:#08723e}
+.duplicate-review-heading h3{margin:8px 0;font:800 clamp(19px,3vw,25px)/1.2 Manrope,sans-serif;color:#17231b}
+.duplicate-review-heading p{margin:0;color:#647067;font-size:13px;line-height:1.65;max-width:760px}
+.duplicate-new-card,.duplicate-existing-card{padding:16px;border:1px solid #e4e9e4;border-radius:14px;background:#fff;margin-top:12px}
+.duplicate-new-card{border-color:#b9d9c5;background:#f7fbf8}.duplicate-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.duplicate-card-top strong{font-size:13px;color:#18251d}.duplicate-tag{font-size:10px;font-weight:700;padding:5px 9px;border-radius:99px;background:#f0f2f0;color:#5b665e}
+.duplicate-tag-new{background:#e1f1e6;color:#17683b}.duplicate-new-card p,.duplicate-existing-card p{font-size:13px;line-height:1.6;color:#354239;margin:10px 0 5px}
+.duplicate-new-card small,.duplicate-existing-card small{font-size:11px;color:#78827b}
+.duplicate-actions,.duplicate-decision,.duplicate-edit-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}
+.duplicate-secondary,.duplicate-primary,.duplicate-cancel{border:1px solid #dce3dd;border-radius:10px;padding:10px 13px;font:700 12px "DM Sans",sans-serif;cursor:pointer;transition:.2s}
+.duplicate-secondary{background:#fff;color:#243329}.duplicate-secondary:hover{border-color:#8ba995;background:#f6faf7}
+.duplicate-primary{background:#07572f;color:#fff;border-color:#07572f}.duplicate-primary:hover{background:#064725}
+.duplicate-cancel{background:transparent;color:#69736c;border-color:transparent}.duplicate-cancel:hover{background:#f0f2f0}
+.duplicate-decision{padding-top:16px;border-top:1px solid #e5e9e5}.duplicate-edit-form{margin-top:18px;padding:18px;border-radius:14px;background:#f0f5f1;border:1px solid #dce8df}
+.duplicate-edit-heading{display:grid;gap:4px;margin-bottom:14px}.duplicate-edit-heading strong{font-size:14px;color:#1c2b21}.duplicate-edit-heading span{font-size:11px;color:#6d786f}
+.duplicate-edit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.duplicate-edit-grid label{display:grid;gap:6px;font-size:11px;font-weight:700;color:#48544b}
+.duplicate-edit-grid input,.duplicate-edit-grid select,.duplicate-edit-grid textarea{width:100%;min-width:0;padding:10px 11px;border:1px solid #d6ded7;border-radius:9px;background:#fff;color:#1d2921;font:500 13px "DM Sans",sans-serif}
+.duplicate-edit-grid small{font-weight:400;color:#78827b}.duplicate-edit-wide{grid-column:1/-1}
+@media(max-width:560px){.duplicate-edit-grid{grid-template-columns:1fr}.duplicate-edit-wide{grid-column:auto}.duplicate-decision>*{width:100%}.duplicate-actions>*{flex:1}}
