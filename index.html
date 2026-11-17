@@ -36,8 +36,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <script defer src="app.js?v=20261114-2"></script>
-  <script defer src="admin.js?v=20261117-1"></script>
-  <script defer src="duplicate-check.js?v=20261117-2"></script>
+  <script defer src="admin.js?v=20261117-2"></script>
+  <script defer src="duplicate-check.js?v=20261117-3"></script>
 </head>
 <body>
   <div class="site-loader" id="site-loader" role="status" aria-label="Chargement du site">
@@ -136,7 +136,6 @@
         <div class="admin-section"><h2>Ajouter une épreuve</h2><form id="admin-add-exam-form" class="admin-exam-form">
   <label class="form-field"><span>Établissement</span><select id="new-exam-campus" required><option value="">Choisir un établissement</option><option>Lomé</option><option>Atakpamé</option><option>Kara</option><option>Sokodé</option><option>Dapaong</option><option>Tsévié</option><option>Kpalimé</option></select></label>
   <label class="form-field"><span>Classe</span><select id="new-exam-class" required><option value="">Choisir une classe</option><option>Seconde</option><option>Première</option><option>Terminale</option></select></label>
-  <label class="form-field"><span>Série (facultatif)</span><input id="new-exam-series" maxlength="20" placeholder="Ex. S, C, D…"></label>
   <label class="form-field"><span>Matière</span><input id="new-exam-subject" maxlength="80" required placeholder="Ex. Mathématiques"></label>
   <label class="form-field"><span>Type d'épreuve</span><select id="new-exam-type" required><option>Devoir</option><option>Composition</option></select></label>
   <label class="form-field"><span>Trimestre</span><select id="new-exam-term" required><option value="1">1er trimestre</option><option value="2">2e trimestre</option><option value="3">3e trimestre</option></select></label>
