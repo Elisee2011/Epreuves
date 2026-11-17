@@ -161,6 +161,21 @@
     $("new-admin-email").value="";setFeedback("admins-feedback",data.message||"Administrateur ajouté.",true);await loadAdmins();
   });
   client.auth.onAuthStateChange(()=>{if(location.hash==="#admin")setTimeout(loadDashboard,0)});
+  const scannerModal=$("scanner-modal"),scannerFrame=$("admin-scanner-frame");
+  $("admin-open-scanner").addEventListener("click",()=>{scannerModal.hidden=false;document.body.style.overflow="hidden"});
+  $("admin-close-scanner").addEventListener("click",()=>{scannerModal.hidden=true;document.body.style.overflow=""});
+  scannerModal.addEventListener("click",event=>{if(event.target===scannerModal){scannerModal.hidden=true;document.body.style.overflow=""}});
+  window.addEventListener("message",event=>{
+    if(event.origin!==window.location.origin||event.source!==scannerFrame.contentWindow||event.data?.type!=="EPREUVESCAN_PDF")return;
+    const blob=event.data.blob;
+    if(!(blob instanceof Blob)||blob.type!=="application/pdf")return;
+    if(blob.size>15*1024*1024){setFeedback("admin-add-exam-feedback","Le PDF scanné dépasse la limite de 15 Mo.");return}
+    const file=new File([blob],event.data.name||"epreuvescan-document.pdf",{type:"application/pdf"});
+    const transfer=new DataTransfer();transfer.items.add(file);$("new-exam-pdf").files=transfer.files;
+    setFeedback("admin-add-exam-feedback","PDF scanné ajouté au formulaire. Complète les informations puis clique sur « Importer et publier ».",true);
+    scannerModal.hidden=true;document.body.style.overflow="";
+    $("admin-add-exam-form").scrollIntoView({behavior:"smooth",block:"center"});
+  });
   window.refreshAdminExamLists=async()=>{await loadExams();await loadPublished()};
   loadDashboard();
 })();
