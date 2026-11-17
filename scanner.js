@@ -2,7 +2,7 @@ const $=id=>document.getElementById(id);
 const state={pages:[],busy:false};
 const toast=message=>{const el=$("toast");el.textContent=message;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),3600)};
 const prettySize=bytes=>bytes<1024*1024?(bytes/1024).toFixed(0)+" Ko":(bytes/1024/1024).toFixed(1)+" Mo";
-function addFiles(files){for(const file of [...files]){if(!file.type.startsWith("image/"))continue;if(state.pages.length>=12){toast("Maximum : 12 pages par document.");break}if(file.size>18*1024*1024){toast(file.name+" dépasse 18 Mo.");continue}const page={id:crypto.randomUUID(),file,url:URL.createObjectURL(file),words:[],lines:[],text:"",width:0,height:0};state.pages.push(page)}renderPages();$("process-btn").disabled=!state.pages.length||state.busy}
+function addFiles(files){for(const file of [...files]){if(!file.type.startsWith("image/"))continue;if(state.pages.length>=12){toast("Maximum : 12 pages par document.");break}if(file.size>18*1024*1024){toast(file.name+" dépasse 18 Mo.");continue}const page={id:crypto.randomUUID(),file,url:URL.createObjectURL(file),words:[],lines:[],text:"",width:0,height:0};state.pages.push(page)}renderPages();$("results").hidden=!state.pages.length;$("process-btn").disabled=!state.pages.length||state.busy}
 function renderPages(){$("pages").innerHTML="";state.pages.forEach((page,index)=>{const card=document.createElement("div");card.className="page-card";card.innerHTML='<button class="remove-page" type="button" aria-label="Retirer la page">×</button><img src="'+page.url+'" alt="Aperçu de la page '+(index+1)+'"><strong>Page '+(index+1)+'</strong><small>'+prettySize(page.file.size)+'</small>';card.querySelector("button").addEventListener("click",()=>{URL.revokeObjectURL(page.url);state.pages.splice(index,1);renderPages();$("process-btn").disabled=!state.pages.length||state.busy});$("pages").append(card)})}
 function setProgress(percent,label){$("progress-wrap").hidden=false;$("progress-bar").style.width=Math.max(0,Math.min(100,percent))+"%";$("progress-label").textContent=label}
 function groupLines(words){const sorted=[...words].sort((a,b)=>a.bbox.y0-b.bbox.y0||a.bbox.x0-b.bbox.x0);const lines=[];for(const word of sorted){if(!word.text||!word.text.trim())continue;const mid=(word.bbox.y0+word.bbox.y1)/2;let line=lines.find(item=>Math.abs(item.mid-mid)<Math.max(9,(word.bbox.y1-word.bbox.y0)*.55));if(!line){line={mid,words:[]};lines.push(line)}line.words.push(word)}lines.sort((a,b)=>a.mid-b.mid);lines.forEach(line=>line.words.sort((a,b)=>a.bbox.x0-b.bbox.x0));return lines}
@@ -18,7 +18,7 @@ async function prepareOCRImage(page){
 async function runOCR(){
   if(state.busy||!state.pages.length)return;
   if(!window.Tesseract){toast("Le moteur de reconnaissance ne s'est pas chargé. Vérifie ta connexion puis recharge la page.");return}
-  state.busy=true;$("process-btn").disabled=true;$("status").textContent="Préparation des images…";$("results").hidden=true;
+  state.busy=true;$("process-btn").disabled=true;$("status").textContent="Préparation des images…";
   setProgress(0,"Préparation des pages pour accélérer la reconnaissance…");
   let worker;
   try{
