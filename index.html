@@ -36,7 +36,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <script defer src="app.js?v=20261114-2"></script>
-  <script defer src="admin.js?v=20261117-2"></script>
+  <script defer src="admin.js?v=20261117-3"></script>
   <script defer src="duplicate-check.js?v=20261117-3"></script>
 </head>
 <body>
@@ -130,7 +130,7 @@
         </form>
       </div>
       <div class="admin-dashboard" id="admin-dashboard" hidden>
-        <div class="admin-heading"><div><div class="section-kicker">TABLEAU DE BORD</div><h1>Gestion des épreuves</h1><p id="admin-identity"></p></div><button class="button button-outline" id="admin-logout">Déconnexion</button></div>
+        <div class="admin-heading"><div><div class="section-kicker">TABLEAU DE BORD</div><h1>Gestion des épreuves</h1><p id="admin-identity"></p></div><div class="admin-heading-actions"><button class="button button-primary" id="admin-open-scanner" type="button">▣ Scanner</button><button class="button button-outline" id="admin-logout">Déconnexion</button></div></div>
         <div class="admin-stats"><div><strong id="pending-count">0</strong><span>En attente</span></div><div><strong id="published-count">0</strong><span>Publiées</span></div></div>
         <div class="admin-section"><h2>Épreuves à valider</h2><div id="pending-list" class="admin-list"></div><p class="admin-feedback" id="pending-feedback"></p></div>
         <div class="admin-section"><h2>Ajouter une épreuve</h2><form id="admin-add-exam-form" class="admin-exam-form">
@@ -149,6 +149,7 @@
 <div class="admin-section"><h2>Épreuves publiées</h2><div id="published-list" class="admin-list"></div><p class="admin-feedback" id="published-feedback"></p></div>
 <div class="admin-section" id="admins-section" hidden><h2>Administrateurs</h2><form id="add-admin-form" class="add-admin-form"><input id="new-admin-email" type="email" placeholder="Adresse e-mail du nouvel administrateur" required><button class="button button-primary" type="submit">Ajouter</button></form><div id="admins-list" class="admin-list"></div><p class="admin-feedback" id="admins-feedback"></p></div>
       </div>
+      <div class="scanner-modal" id="scanner-modal" hidden><div class="scanner-modal-panel"><div class="scanner-modal-head"><div><strong>ÉpreuveScan</strong><span>Le PDF créé sera ajouté au formulaire, sans être publié automatiquement.</span></div><button class="icon-button" id="admin-close-scanner" type="button" aria-label="Fermer le scanner">×</button></div><iframe id="admin-scanner-frame" title="Scanner une épreuve" src="/scanner.html?embedded=1"></iframe></div></div>
     </div>
   </section>
   <footer><a class="brand footer-brand" href="#"><span class="brand-mark"><img src="/assets/logo-epreuves-final.png?v=4" alt=""></span><span class="brand-copy"><strong>ÉPREUVES</strong><small>LYCÉES SCIENTIFIQUES DU TOGO</small></span></a><span>Une initiative de partage des ressources scolaires.</span><span>© <span id="year-now"></span> · Épreuves</span><a class="admin-footer-link" href="#admin">Administration</a></footer>
