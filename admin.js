@@ -161,5 +161,6 @@
     $("new-admin-email").value="";setFeedback("admins-feedback",data.message||"Administrateur ajouté.",true);await loadAdmins();
   });
   client.auth.onAuthStateChange(()=>{if(location.hash==="#admin")setTimeout(loadDashboard,0)});
+  window.refreshAdminExamLists=async()=>{await loadExams();await loadPublished()};
   loadDashboard();
 })();
