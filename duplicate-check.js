@@ -108,7 +108,7 @@
         const remaining=(result2.data||[]).filter(x=>keyOf(x)===keyOf(draft()));
         if(remaining.length)showMatches(remaining);
         else{review.hidden=true;feedback("L’ancienne épreuve a été modifiée. Vérifie les identifiants de la nouvelle avant de la publier.",true);}
-        window.dispatchEvent(new Event("focus"));
+        if(window.refreshAdminExamLists) await window.refreshAdminExamLists();
       }catch(err){
         if(newPath)await db.storage.from("exam-pdfs").remove([newPath]);
         status.textContent=err?.message||"La modification a échoué. Réessaie.";
@@ -135,7 +135,7 @@
       if(ins.error){await db.storage.from("exam-pdfs").remove([path]);throw ins.error;}
       form.reset();review.hidden=true;
       feedback(confirmed?"Nouvelle épreuve publiée après confirmation qu’il s’agit d’un document différent.":"Épreuve ajoutée et publiée avec succès.",true);
-      window.dispatchEvent(new Event("focus"));
+      if(window.refreshAdminExamLists) await window.refreshAdminExamLists();
     }catch(err){console.error("Publication épreuve :",err);feedback(err?.message||"L’ajout de l’épreuve a échoué. Réessaie.");}
     finally{busy(false,"Importer et publier");}
   }
