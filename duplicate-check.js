@@ -15,14 +15,14 @@
 
   const esc = v => String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const norm = v => String(v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().replace(/\s+/g," ").toLowerCase();
-  const keys = ["campus","class_name","series","subject","exam_type","term","number","school_year"];
+  const keys = ["campus","class_name","subject","exam_type","term","number","school_year"];
   const keyOf = x => keys.map(k=>norm(x[k])).join("|");
   const draft = () => {
     const type=$("new-exam-type").value;
     return {
       campus:$("new-exam-campus").value,
       class_name:$("new-exam-class").value,
-      series:$("new-exam-series").value.trim()||null,
+      series:null,
       subject:$("new-exam-subject").value.trim(),
       exam_type:type,term:Number($("new-exam-term").value),
       number:type==="Composition"?"composition":$("new-exam-number").value,
@@ -71,7 +71,6 @@
     panel.innerHTML='<form class="duplicate-edit-form" id="duplicate-existing-form"><div class="duplicate-edit-heading"><strong>Modifier l’épreuve existante</strong><span>Les changements seront appliqués à l’épreuve déjà enregistrée.</span></div><div class="duplicate-edit-grid">'+
       '<label>Établissement<select name="campus" required>'+opts(campus,item.campus)+'</select></label>'+
       '<label>Classe<select name="class_name" required>'+opts(classes,item.class_name)+'</select></label>'+
-      '<label>Série<input name="series" maxlength="20" value="'+esc(item.series||"")+'"></label>'+
       '<label>Matière<input name="subject" maxlength="80" required value="'+esc(item.subject)+'"></label>'+
       '<label>Type<select name="exam_type">'+opts(["Devoir","Composition"],item.exam_type)+'</select></label>'+
       '<label>Trimestre<select name="term">'+[1,2,3].map(v=>'<option value="'+v+'" '+(Number(item.term)===v?"selected":"")+'>'+v+'</option>').join("")+'</select></label>'+
@@ -95,7 +94,7 @@
           const up=await db.storage.from("exam-pdfs").upload(newPath,pdf,{contentType:"application/pdf",upsert:false});
           if(up.error)throw up.error;
         }
-        const changes={campus:v.campus,class_name:v.class_name,series:v.series.trim()||null,subject:v.subject.trim(),
+        const changes={campus:v.campus,class_name:v.class_name,subject:v.subject.trim(),
           exam_type:v.exam_type,term:Number(v.term),number:v.exam_type==="Composition"?"composition":v.number,
           school_year:v.school_year.trim(),notes:v.notes.trim()||null};
         if(newPath)changes.file_path=newPath;
