@@ -53,9 +53,37 @@ async function runOCR(){
 function loadImage(url){return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=url})}
 function detectRules(source){const max=900,ratio=Math.min(1,max/source.width,max/source.height),w=Math.max(1,Math.round(source.width*ratio)),h=Math.max(1,Math.round(source.height*ratio));const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;const ctx=canvas.getContext("2d",{willReadFrequently:true});ctx.drawImage(source,0,0,w,h);const data=ctx.getImageData(0,0,w,h).data;const row=[],col=[];for(let y=0;y<h;y++){let n=0;for(let x=0;x<w;x++){const p=(y*w+x)*4;if((data[p]+data[p+1]+data[p+2])/3<105)n++}if(n>w*.28)row.push(y)}for(let x=0;x<w;x++){let n=0;for(let y=0;y<h;y++){const p=(y*w+x)*4;if((data[p]+data[p+1]+data[p+2])/3<105)n++}if(n>h*.22)col.push(x)}const group=a=>{const out=[];for(const v of a){const last=out[out.length-1];if(last&&v-last.end<=3)last.end=v;else out.push({start:v,end:v})}return out.filter(v=>v.end-v.start<=8).map(v=>(v.start+v.end)/2)};return{width:w,height:h,rows:group(row),cols:group(col)}}
 function renderEditors(){$("editors").innerHTML="";state.pages.forEach((page,index)=>{const card=document.createElement("div");card.className="editor-card";const count=page.words.length;card.innerHTML='<div class="editor-head"><b>Page '+(index+1)+'</b><span>'+count+' mots reconnus</span></div><textarea aria-label="Texte reconnu de la page '+(index+1)+'" spellcheck="false"></textarea>';const area=card.querySelector("textarea");area.value=page.text;area.addEventListener("input",()=>{page.editedText=area.value});$("editors").append(card)})}
-function getEditedWords(page){const text=page.editedText===undefined?page.text:page.editedText;return text.match(/\S+/g)||[]}
-function addPositionedPage(doc,page){const pw=210,ph=297,scale=Math.min(pw/page.width,ph/page.height),offsetX=(pw-page.width*scale)/2,offsetY=(ph-page.height*scale)/2;const tokens=getEditedWords(page);if(tokens.length===page.words.length){page.words.forEach((word,index)=>{const b=word.bbox;const x=offsetX+b.x0*scale;const y=offsetY+b.y1*scale;const h=Math.max(1,(b.y1-b.y0)*scale);const font=Math.max(4.2,Math.min(22,h*2.15));doc.setFont("helvetica","normal");doc.setFontSize(font);doc.text(tokens[index],x,y,{baseline:"alphabetic",maxWidth:Math.max(2,(b.x1-b.x0)*scale*1.8)})})}else{const text=(page.editedText===undefined?page.text:page.editedText);doc.setFont("helvetica","normal");doc.setFontSize(10);const lines=doc.splitTextToSize(text,180);doc.text(lines,15,18,{lineHeightFactor:1.35})}
-const marks=page.lineMarks;if(marks){doc.setDrawColor(65,65,65);doc.setLineWidth(.18);marks.rows.forEach(y=>{const py=offsetY+y*(page.height/marks.height)*scale;doc.line(offsetX,py,offsetX+page.width*scale,py)});marks.cols.forEach(x=>{const px=offsetX+x*(page.width/marks.width)*scale;doc.line(px,offsetY,px,offsetY+page.height*scale)})}}
-function exportPDF(){if(!window.jspdf?.jsPDF){toast("Le générateur PDF ne s'est pas chargé.");return}const doc=new jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});state.pages.forEach((page,index)=>{if(index)doc.addPage("a4","portrait");addPositionedPage(doc,page)});const blob=doc.output("blob");if(window.parent!==window){window.parent.postMessage({type:"EPREUVESCAN_PDF",blob,name:"epreuvescan-document.pdf"},"*")}doc.save("epreuvescan-document.pdf");toast(window.parent!==window?"PDF transmis au formulaire et téléchargé.":"PDF créé. Vérifie les formules et les tableaux dans le fichier.")}
+async function addImagePage(doc,page,index){
+  const image=await loadImage(page.url);
+  const maxSide=2600,ratio=Math.min(1,maxSide/Math.max(image.naturalWidth,image.naturalHeight));
+  const width=Math.max(1,Math.round(image.naturalWidth*ratio));
+  const height=Math.max(1,Math.round(image.naturalHeight*ratio));
+  const canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,width,height);ctx.drawImage(image,0,0,width,height);
+  const data=canvas.toDataURL("image/jpeg",.94);
+  const landscape=width>height,pw=landscape?297:210,ph=landscape?210:297,margin=3;
+  if(index)doc.addPage("a4",landscape?"landscape":"portrait");
+  else if(landscape)doc=new jspdf.jsPDF({orientation:"landscape",unit:"mm",format:"a4",compress:true});
+  const scale=Math.min((pw-2*margin)/width,(ph-2*margin)/height);
+  const w=width*scale,h=height*scale,x=(pw-w)/2,y=(ph-h)/2;
+  doc.addImage(data,"JPEG",x,y,w,h,undefined,"FAST");
+  return doc;
+}
+async function exportPDF(){
+  if(!window.jspdf?.jsPDF){toast("Le générateur PDF ne s'est pas chargé.");return}
+  if(!state.pages.length){toast("Ajoute au moins une page.");return}
+  try{
+    let doc=new jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4",compress:true});
+    for(let i=0;i<state.pages.length;i++){
+      doc=await addImagePage(doc,state.pages[i],i);
+      $("status").textContent="Préparation du PDF — page "+(i+1)+"/"+state.pages.length;
+    }
+    const blob=doc.output("blob");
+    if(window.parent!==window)window.parent.postMessage({type:"EPREUVESCAN_PDF",blob,name:"epreuvescan-document.pdf"},"*");
+    doc.save("epreuvescan-document.pdf");
+    $("status").textContent="PDF fidèle aux photos originales";
+    toast(window.parent!==window?"PDF fidèle transmis au formulaire et téléchargé.":"PDF créé en conservant les pages originales.");
+  }catch(error){console.error(error);toast("Impossible de créer le PDF. Réessaie avec des photos moins volumineuses.")}
+}
 $("camera-input").addEventListener("change",e=>{addFiles(e.target.files);e.target.value=""});$("file-input").addEventListener("change",e=>{addFiles(e.target.files);e.target.value=""});$("process-btn").addEventListener("click",runOCR);$("export-btn").addEventListener("click",exportPDF);
 const drop=$("dropzone");["dragenter","dragover"].forEach(name=>drop.addEventListener(name,e=>{e.preventDefault();drop.classList.add("drag")}));["dragleave","drop"].forEach(name=>drop.addEventListener(name,e=>{e.preventDefault();drop.classList.remove("drag")}));drop.addEventListener("drop",e=>addFiles(e.dataTransfer.files));
