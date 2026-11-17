@@ -135,7 +135,7 @@
       const type=$("new-exam-type").value;
       const number=type==="Composition"?"composition":$("new-exam-number").value;
       const {error:insertError}=await client.from("exams").insert({
-        campus,level:"Secondaire",class_name:className,series:$("new-exam-series").value.trim()||null,
+        campus,level:"Secondaire",class_name:className,series:null,
         subject,exam_type:type,term:Number($("new-exam-term").value),number,school_year:year,
         notes:$("new-exam-notes").value.trim()||null,file_path:path,status:"approved"
       });
