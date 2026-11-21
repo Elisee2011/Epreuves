@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#07572f">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Épreuves">
   <meta name="description" content="ÉpreuveScan assemble les photos de feuilles en PDF en conservant leur mise en page originale.">
   <title>ÉpreuveScan — Numérisation intelligente</title>
   <link rel="icon" href="/assets/logo-epreuves-final.png">
@@ -58,5 +62,6 @@
   </main>
   <footer><span>ÉpreuveScan</span><span>Un outil de la bibliothèque Épreuves</span></footer>
   <div class="toast" id="toast" role="status"></div>
+  <script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {})); }</script>
 </body>
 </html>
