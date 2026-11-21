@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Épreuves — Lycées Scientifiques du Togo",
+  "short_name": "Épreuves",
+  "description": "Consulte et partage les anciennes épreuves des Lycées Scientifiques du Togo.",
+  "lang": "fr-TG",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#07572f",
+  "icons": [
+    {
+      "src": "/assets/logo-epreuves-final.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/logo-epreuves-final.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
