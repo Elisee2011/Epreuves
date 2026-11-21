@@ -8,6 +8,11 @@
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="author" content="Épreuves — Lycées Scientifiques du Togo">
   <link rel="canonical" href="https://epreuves-iota.vercel.app/">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Épreuves">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="fr_TG">
   <meta property="og:site_name" content="Épreuves — Lycées Scientifiques du Togo">
@@ -155,5 +160,6 @@
   <footer><a class="brand footer-brand" href="#"><span class="brand-mark"><img src="/assets/logo-epreuves-final.png?v=4" alt=""></span><span class="brand-copy"><strong>ÉPREUVES</strong><small>LYCÉES SCIENTIFIQUES DU TOGO</small></span></a><span>Une initiative de partage des ressources scolaires.</span><span>© <span id="year-now"></span> · Épreuves</span><a class="admin-footer-link" href="#admin">Administration</a></footer>
 
   <div class="toast" id="toast" role="status"></div>
+  <script>if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {})); }</script>
 </body>
 </html>
