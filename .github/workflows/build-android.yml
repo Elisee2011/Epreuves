@@ -1,0 +1,86 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/build-android.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y expect
+          npm install -g @bubblewrap/cli
+
+      - name: Generate Android project
+        shell: bash
+        run: |
+          # This is a test build. Gradle's standard debug key signs the APK.
+          touch android-keystore
+          cat > /tmp/init.exp <<'EXPECT'
+          set timeout 900
+          spawn bubblewrap init --manifest=https://epreuves-iota.vercel.app/manifest.webmanifest --directory=.
+          expect {
+            -re {Host} { send "\r"; exp_continue }
+            -re {Start URL} { send "\r"; exp_continue }
+            -re {Name} { send "\r"; exp_continue }
+            -re {Launcher Name} { send "\r"; exp_continue }
+            -re {Package ID} { send "tg.lycees.epreuves\r"; exp_continue }
+            -re {Version Code} { send "1\r"; exp_continue }
+            -re {Display} { send "\r"; exp_continue }
+            -re {Orientation} { send "\r"; exp_continue }
+            -re {Theme Color} { send "\r"; exp_continue }
+            -re {Background Color} { send "\r"; exp_continue }
+            -re {Icon URL} { send "\r"; exp_continue }
+            -re {Maskable Icon URL} { send "\r"; exp_continue }
+            -re {Monochrome Icon URL} { send "\r"; exp_continue }
+            -re {Play Billing} { send "n\r"; exp_continue }
+            -re {Location Delegation} { send "n\r"; exp_continue }
+            -re {Key Path} { send "\r"; exp_continue }
+            -re {Key Alias} { send "\r"; exp_continue }
+            eof
+          }
+          EXPECT
+          expect /tmp/init.exp
+          test -f twa-manifest.json
+
+      - name: Build Android debug APK
+        run: |
+          bubblewrap build --skipSigning
+          ./gradlew --no-daemon assembleDebug
+          mkdir -p output
+          find app/build/outputs/apk/debug -name '*.apk' -exec cp {} output/EPREUVES-debug.apk \;
+          test -s output/EPREUVES-debug.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EPREUVES-Android-APK
+          path: output/EPREUVES-debug.apk
+          if-no-files-found: error
+          retention-days: 14
